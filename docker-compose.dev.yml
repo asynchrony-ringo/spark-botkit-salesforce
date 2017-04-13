@@ -1,6 +1,6 @@
 version: '2'
 services:
-  service-now:
+  salesforce:
     ports:
       - "3000:3000"
     volumes:
