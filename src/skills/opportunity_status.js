@@ -3,14 +3,14 @@ const opportunityStatus = (controller, jsforceConn) => {
     const oppId = message.match[1];
     jsforceConn.sobject('Opportunity').retrieve(oppId, (error, opp) => {
       if (!error) {
-        const oppResponse = `Opportunity name: ${opp.Name}\n` +
+        const oppResponse = `Information for opportunity: [${oppId}](${process.env.base_url}${oppId})\n` +
+          `* Name: ${opp.Name}\n` +
           `* Current stage: ${opp.StageName}\n` +
-          `* Close Date: ${opp.CloseDate}\n` +
-          `* [View in Salesforce](${process.env.base_url}${oppId})`;
+          `* Close Date: ${opp.CloseDate}\n`;
 
         bot.reply(message, oppResponse);
       } else {
-        bot.reply(message, `Sorry, I was unable to retrieve your opportunity: ${error}`);
+        bot.reply(message, `Sorry, I was unable to retrieve your opportunity: ${oppId}. ${error}`);
       }
     });
   });

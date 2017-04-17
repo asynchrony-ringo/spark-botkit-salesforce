@@ -58,9 +58,13 @@ describe('opportunity status', () => {
       it('should reply with the opportunity details', () => {
         expect(bot.reply.calledOnce).to.be.true;
         expect(bot.reply.args[0][0]).to.equal(message);
-        expect(bot.reply.args[0][1]).to.contain(opp.Name);
-        expect(bot.reply.args[0][1]).to.contain(opp.StageName);
-        expect(bot.reply.args[0][1]).to.contain(opp.CloseDate);
+        const responseMessage = bot.reply.args[0][1];
+        const messageParts = responseMessage.split('*');
+        expect(messageParts.length).to.equal(4);
+        expect(messageParts[0]).to.equal('Information for opportunity: [literallyAnything](undefinedliterallyAnything)\n');
+        expect(messageParts[1]).to.equal(' Name: Super Awesome Opportunity\n');
+        expect(messageParts[2]).to.equal(' Current stage: Research\n');
+        expect(messageParts[3]).to.equal(' Close Date: 11/13/1988\n');
       });
     });
 
@@ -73,8 +77,7 @@ describe('opportunity status', () => {
       it('should reply with an error message', () => {
         expect(bot.reply.calledOnce).to.be.true;
         expect(bot.reply.args[0][0]).to.equal(message);
-        expect(bot.reply.args[0][1]).to.contain('Sorry');
-        expect(bot.reply.args[0][1]).to.contain(error);
+        expect(bot.reply.args[0][1]).to.equal('Sorry, I was unable to retrieve your opportunity: literallyAnything. Error: tribbles!!');
       });
     });
   });
