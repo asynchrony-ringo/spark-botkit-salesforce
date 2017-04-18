@@ -1,4 +1,8 @@
 const nightmareHelpers = {
+  goHome: nightmare => nightmare
+    .goto('https://web.ciscospark.com')
+    .wait('.user-welcome-text')
+    .wait(() => document.querySelectorAll('.user-welcome-text').length === 0),
   login: nightmare => nightmare
     .goto('https://web.ciscospark.com/signin')
     .insert('input[type=text]', process.env.integrationUser)
@@ -24,18 +28,29 @@ const nightmareHelpers = {
     .wait(1000),
   sendMessage: message => nightmare => nightmare
     .type('#message-composer', message)
-    .type('#message-composer', '\u000d'),
-  sendDirectMessage: message => nightmare => nightmare
+    .type('#message-composer', '\u000d')
+    .use(nightmareHelpers.waitForMyResponse),
+  sendMentionMessage: message => nightmare => nightmare
     .type('#message-composer', '@SF')
     .type('#message-composer', '\u000d')
     .type('#message-composer', ` ${message}`)
-    .type('#message-composer', '\u000d'),
+    .type('#message-composer', '\u000d')
+    .use(nightmareHelpers.waitForMyResponse),
+  waitForMyResponse: nightmare => nightmare
+    .use(nightmareHelpers.waitForNextResponse('You')),
   evaluateNextSFBotResponse: nightmare => nightmare
-    .wait(() => {
+    .use(nightmareHelpers.waitForNextSFBotResponse)
+    .evaluate(() => document.querySelector('.activity-item:last-child').innerText),
+  evaluateNextSFBotResponseLinkHref: nightmare => nightmare
+    .use(nightmareHelpers.waitForNextSFBotResponse)
+    .evaluate(() => document.querySelector('.activity-item:last-child a').href),
+  waitForNextSFBotResponse: nightmare => nightmare
+    .use(nightmareHelpers.waitForNextResponse('SFBot')),
+  waitForNextResponse: displayName => nightmare => nightmare
+    .wait((displayNameBrowserParam) => {
       const lastChild = document.querySelector('.activity-item:last-child .display-name');
-      return lastChild && lastChild.innerText && lastChild.innerText === 'SFBot';
-    })
-    .evaluate(() => document.querySelector('.activity-item:last-child').innerText)
+      return lastChild && lastChild.innerText && lastChild.innerText === displayNameBrowserParam;
+    }, displayName),
 };
 
 module.exports = nightmareHelpers;
