@@ -23,6 +23,7 @@ const nightmareHelpers = {
     .insert('input.add-people', '\u000d')
     .insert('input.add-people', process.env.integrationUser2)
     .insert('input.add-people', '\u000d')
+    .wait(1000)
     .click('button.btnCreateRoom')
     .wait('#message-composer')
     .wait(1000),

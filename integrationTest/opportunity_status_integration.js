@@ -8,7 +8,7 @@ env('.env');
 
 describe('opportunity', () => {
   it('should respond with opportunity status after direct message creation in a direct message and group message', () => {
-    const nightmare = Nightmare({ show: true });
+    const nightmare = Nightmare({ show: true, waitTimeout: 60000 });
     return nightmare
         .use(nightmareHelpers.login)
         .use(nightmareHelpers.startPrivateConversation)
