@@ -29,8 +29,17 @@ done
 CONTAINER=`docker ps -f ancestor=$IMAGE -lq`
 echo "Docker container: $CONTAINER"
 
-docker exec -e DEBUG=nightmare:actions* $CONTAINER xvfb-run npm run uat
-EXIT=$?
+n=0
+until [ $n -ge 3 ]
+do
+  docker exec -e DEBUG=nightmare:actions* $CONTAINER xvfb-run npm run uat
+  EXIT=$?
+  if [ $EXIT -eq 0 ]
+  then
+    break
+  fi
+  n=$(($n + 1))
+done
 
 echo 'Shutting down docker'
 docker-compose down
