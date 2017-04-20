@@ -3,9 +3,15 @@ const debug = require('debug')('botkit:incoming_webhooks');
 module.exports = (webserver, controller, jsforceConn) => {
   debug('Configured POST /salesforce/update for receiving events');
   webserver.post('/salesforce/update', (req, res) => {
-        // NOTE: we should enforce the token check here
+    // NOTE: we should enforce the token check here
+    // respond to spark that the webhook has been received.
 
-        // respond to spark that the webhook has been received.
+    if (!req.body.attributes || !req.body.attributes.type || req.body.attributes.type !== 'Opportunity') {
+      res.status(400);
+      res.send('Bad Request');
+      return;
+    }
+
     res.status(200);
     res.send('ok');
 

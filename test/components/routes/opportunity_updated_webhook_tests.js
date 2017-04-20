@@ -37,16 +37,38 @@ describe('incoming web hook for opportunity update', () => {
       jsforceConn.sobject.returns({ retrieve: retrieveStub });
     });
 
-    it('should check we have a OwnerId attribute on the request', () => {
+    it('should return a successful status and message when the request is of correct type', () => {
       const res = {
         status: sinon.stub(),
         send: sinon.stub(),
       };
 
-      webserverPostCallback({ body: { ownerId: 'foo' } }, res);
+      webserverPostCallback({
+        body: {
+          attributes: {
+            type: 'Opportunity',
+          },
+        },
+      }, res);
 
       expect(res.status.calledWith(200)).to.be.true;
       expect(res.send.calledWith('ok')).to.be.true;
+    });
+
+    [{ attributes: { type: 'Foo' } }, { attributes: {} }, {}].forEach((requestBody) => {
+      it(`should return a failing status and message when the request is ${JSON.stringify(requestBody)}`, () => {
+        const res = {
+          status: sinon.stub(),
+          send: sinon.stub(),
+        };
+
+        webserverPostCallback({
+          body: requestBody,
+        }, res);
+
+        expect(res.status.calledWith(400)).to.be.true;
+        expect(res.send.calledWith('Bad Request')).to.be.true;
+      });
     });
   });
 });
