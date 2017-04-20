@@ -169,7 +169,7 @@ describe('incoming web hook for opportunity update', () => {
             type: 'Opportunity',
           },
           OwnerId: 1234,
-          Name: 'really_nice_name',
+          Name: 'really_nice_name2',
           Id: 'even_better_id',
         }];
         request.body.old = [{
@@ -238,15 +238,16 @@ describe('incoming web hook for opportunity update', () => {
             delete process.env.base_url;
           });
 
-          it('should not say anything if error', () => {
+          it('should not say anything on error', () => {
             conversationCallback(true, conversation);
             expect(conversation.say.notCalled).to.be.true;
           });
 
-          it('should tell the user an opportunity has been created if success', () => {
+          it('should tell the user an opportunity has been created and diff message on success', () => {
             conversationCallback(null, conversation);
             expect(conversation.say.called).to.be.true;
-            expect(conversation.say.args[0][0]).to.equal('An opportunity you own has been updated! [really_nice_name](niceurl.some-domain.ext/even_better_id)');
+            const diff = '\nName was updated to: really_nice_name2';
+            expect(conversation.say.args[0][0]).to.equal(`An opportunity you own has been updated!${diff}\n[really_nice_name2](niceurl.some-domain.ext/even_better_id)`);
           });
         });
       });

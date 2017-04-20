@@ -46,6 +46,26 @@ const isValidRequest = (req) => {
   return true;
 };
 
+const diffBetweenOpportunities = (newOpp, oldOpp) => {
+  let diffOutput = '';
+  const diffs = [];
+
+  Object.keys(newOpp).forEach((key) => {
+    if (typeof newOpp[key] === 'string') {
+      if (newOpp[key] !== oldOpp[key]) {
+        diffs.push(`${key} was updated to: ${newOpp[key]}`);
+      }
+    }
+  });
+
+  if (diffs.length > 0) {
+    diffOutput += '\n';
+    diffOutput += diffs.join('\n');
+  }
+
+  return diffOutput;
+};
+
 const messageOpportunityOwner = (newOpp, oldOpp, controller, jsforceConn) => {
   if (newOpp.OwnerId) {
     jsforceConn.sobject('User').retrieve(newOpp.OwnerId, (userRetrievalError, user) => {
@@ -61,7 +81,8 @@ const messageOpportunityOwner = (newOpp, oldOpp, controller, jsforceConn) => {
             console.log(`Error starting conversation with ${user.Email}:`, startConversationError);
             return;
           }
-          conversation.say(`An opportunity you own has been updated! [${newOpp.Name}](${process.env.base_url}${newOpp.Id})`);
+          const diff = diffBetweenOpportunities(newOpp, oldOpp);
+          conversation.say(`An opportunity you own has been updated!${diff}\n[${newOpp.Name}](${process.env.base_url}${newOpp.Id})`);
         });
     });
   }
