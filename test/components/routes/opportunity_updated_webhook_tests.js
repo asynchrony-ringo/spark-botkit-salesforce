@@ -56,6 +56,11 @@ describe('incoming web hook for opportunity update', () => {
           type: 'Opportunity',
         },
       }];
+      request.body.old = [{
+        attributes: {
+          type: 'Opportunity',
+        },
+      }];
 
       webserverPostCallback(request, response);
 
@@ -63,7 +68,7 @@ describe('incoming web hook for opportunity update', () => {
       expect(response.send.calledWith('ok')).to.be.true;
     });
 
-    it('should return a failing status and message when the request is malformed', () => {
+    it('should return a failing status and message when the request is empty', () => {
       request.body = {};
 
       webserverPostCallback(request, response);
@@ -72,9 +77,67 @@ describe('incoming web hook for opportunity update', () => {
       expect(response.send.calledWith('Bad Request')).to.be.true;
     });
 
-    [{ attributes: { type: 'Foo' } }, { attributes: {} }, {}].forEach((requestBody) => {
-      it(`should return a failing status and message when the request is ${JSON.stringify(requestBody)}`, () => {
-        request.body.new = [requestBody];
+    [{ attributes: { type: 'Foo' } }, { attributes: {} }, {}].forEach((opportunity) => {
+      it(`should return a failing status and message when the request is ${JSON.stringify(opportunity)}`, () => {
+        request.body.new = [opportunity];
+        request.body.old = [opportunity];
+        webserverPostCallback(request, response);
+
+        expect(response.status.calledWith(400)).to.be.true;
+        expect(response.send.calledWith('Bad Request')).to.be.true;
+      });
+    });
+
+
+    [
+      {
+        new: [{ attributes: { type: 'Opportunity' } }],
+        old: [],
+        description: 'new has more than old',
+      },
+      {
+        new: [],
+        old: [{ attributes: { type: 'Opportunity' } }],
+        description: 'old has more than new',
+      },
+      {
+        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }],
+        old: [{ attributes: { type: 'Opportunity' }, Id: '2' }],
+        description: 'different ids',
+      },
+      {
+        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Opportunity' }, Id: '2' }],
+        old: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Opportunity' }, Id: '3' }],
+        description: 'different ids after the first',
+      },
+      {
+        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }],
+        old: [{ Id: '1' }],
+        description: 'old element does not contain attributes attribute',
+      },
+      {
+        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }],
+        old: [{ attributes: {}, Id: '1' }],
+        description: 'old element does not contain type attribute',
+      },
+      {
+        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }],
+        old: [{ attributes: { type: 'Foo' }, Id: '1' }],
+        description: 'old element is not an opportunity',
+      },
+      {
+        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Bar' }, Id: '2' }],
+        old: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Opportunity' }, Id: '2' }],
+        description: 'second new element is not of type Opportunity',
+      },
+      {
+        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Opportunity' }, Id: '2' }],
+        old: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Bar' }, Id: '2' }],
+        description: 'second old element is not of type Opportunity',
+      },
+    ].forEach((testCase) => {
+      it(`should return a failing status and message when ${testCase.description}`, () => {
+        request.body = { new: testCase.new, old: testCase.old };
         webserverPostCallback(request, response);
 
         expect(response.status.calledWith(400)).to.be.true;
@@ -84,6 +147,12 @@ describe('incoming web hook for opportunity update', () => {
 
     it('should not retrieve a user if there is no owner id', () => {
       request.body.new = [{
+        attributes: {
+          type: 'Opportunity',
+        },
+        ownerId: null,
+      }];
+      request.body.old = [{
         attributes: {
           type: 'Opportunity',
         },
@@ -100,6 +169,16 @@ describe('incoming web hook for opportunity update', () => {
             type: 'Opportunity',
           },
           OwnerId: 1234,
+          Name: 'really_nice_name',
+          Id: 'even_better_id',
+        }];
+        request.body.old = [{
+          attributes: {
+            type: 'Opportunity',
+          },
+          OwnerId: 1234,
+          Name: 'really_nice_name',
+          Id: 'even_better_id',
         }];
         webserverPostCallback(request, response);
       });
@@ -165,8 +244,6 @@ describe('incoming web hook for opportunity update', () => {
           });
 
           it('should tell the user an opportunity has been created if success', () => {
-            request.body.Name = 'really_nice_name';
-            request.body.Id = 'even_better_id';
             conversationCallback(null, conversation);
             expect(conversation.say.called).to.be.true;
             expect(conversation.say.args[0][0]).to.equal('An opportunity you own has been updated! [really_nice_name](niceurl.some-domain.ext/even_better_id)');
