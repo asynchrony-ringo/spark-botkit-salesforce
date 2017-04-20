@@ -30,7 +30,9 @@ describe('opportunity create', () => {
     let bot;
     let message;
     let listenerCallback;
+    let userCallback;
     let create;
+    let find;
 
     beforeEach(() => {
       bot = {
@@ -41,48 +43,82 @@ describe('opportunity create', () => {
           'full expression',
           'oppName blah',
           'stageName blah',
-          'closeDate blah'],
+          'closeDate blah',
+        ],
+        user: 'somebody@example.com',
       };
       create = sinon.stub();
-      jsforceConn.sobject = sinon.stub().withArgs('Opportunity').returns({ create });
+      execute = sinon.spy((cb) => {
+        userCallback = cb;
+      });
+      find = sinon.spy(() => ({ execute }));
+      jsforceConn.sobject = sinon.stub();
+      jsforceConn.sobject.withArgs('Opportunity').returns({ create });
+      jsforceConn.sobject.withArgs('User').returns({ find });
 
       listenerCallback = controller.hears.args[0][2];
       listenerCallback(bot, message);
     });
 
-    it('should create sobject', () => {
-      expect(create.calledOnce).to.be.true;
-      expect(create.args[0][0]).to.deep.equal({
-        Name: 'oppName blah',
-        StageName: 'stageName blah',
-        CloseDate: 'closeDate blah',
-      });
-      expect(create.args[0][1]).to.be.a('Function');
-    });
-
-    describe('create opportunity callback', () => {
-      let createCallback;
-      beforeEach(() => {
-        createCallback = create.args[0][1];
+    describe('user lookup', () => {
+      it('calls jsforce query chain', () => {
+        expect(find.calledOnce).to.be.true;
+        expect(find.args[0][0]).to.deep.equal({ Email: 'somebody@example.com' });
+        expect(execute.calledOnce).to.be.true;
+        expect(execute.args[0][0]).to.be.a('Function');
       });
 
-      describe('when there is an error', () => {
+      describe('when successful', () => {
         beforeEach(() => {
-          createCallback('error', null);
+          userCallback(null, [{ Id: 'userId' }]);
+        });
+
+        it('should create sobject', () => {
+          expect(create.calledOnce).to.be.true;
+          expect(create.args[0][0]).to.deep.equal({
+            Name: 'oppName blah',
+            StageName: 'stageName blah',
+            CloseDate: 'closeDate blah',
+            OwnerId: 'userId',
+          });
+          expect(create.args[0][1]).to.be.a('Function');
+        });
+
+        describe('create opportunity callback', () => {
+          let createCallback;
+          beforeEach(() => {
+            createCallback = create.args[0][1];
+          });
+
+          describe('when there is an error', () => {
+            beforeEach(() => {
+              createCallback('error', null);
+            });
+
+            it('should return with an error', () => {
+              expect(bot.reply.args[0][1]).to.equal('Error: error');
+            });
+          });
+
+          describe('when it is successful', () => {
+            beforeEach(() => {
+              createCallback(null, { id: 'bogusId' });
+            });
+
+            it('should return success with link to created opportunity', () => {
+              expect(bot.reply.args[0][1]).to.equal(`Success: [oppName blah](${baseUrl}bogusId)`);
+            });
+          });
+        });
+      });
+
+      describe('when unsuccessful', () => {
+        beforeEach(() => {
+          userCallback('Nooo!', null);
         });
 
         it('should return with an error', () => {
-          expect(bot.reply.args[0][1]).to.equal('Error: error');
-        });
-      });
-
-      describe('when it is successful', () => {
-        beforeEach(() => {
-          createCallback(null, { id: 'bogusId' });
-        });
-
-        it('should return success with link to created opportunity', () => {
-          expect(bot.reply.args[0][1]).to.equal(`Success: [oppName blah](${baseUrl}bogusId)`);
+          expect(bot.reply.args[0][1]).to.equal('Error finding user: Nooo!');
         });
       });
     });
