@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var querystring = require('querystring');
 var debug = require('debug')('botkit:webserver');
 
-module.exports = function(controller, bot) {
+module.exports = function(controller, jsforceConn) {
 
 
     var webserver = express();
@@ -22,7 +22,7 @@ module.exports = function(controller, bot) {
     // import all the pre-defined routes that are present in /components/routes
     var normalizedPath = require("path").join(__dirname, "routes");
     require("fs").readdirSync(normalizedPath).forEach(function(file) {
-      require("./routes/" + file)(webserver, controller);
+      require("./routes/" + file)(webserver, controller, jsforceConn);
     });
 
     controller.webserver = webserver;

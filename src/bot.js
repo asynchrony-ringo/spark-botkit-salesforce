@@ -46,9 +46,6 @@ var controller = Botkit.sparkbot({
     studio_command_uri: process.env.studio_command_uri,
 });
 
-// Set up an Express-powered webserver to expose oauth and webhook endpoints
-var webserver = require(__dirname + '/components/express_webserver.js')(controller);
-
 // Establish connection to Salesforce
 var jsforce = require('jsforce');
 var jsforceConn = new jsforce.Connection({ loginUrl : process.env.base_url });
@@ -56,6 +53,11 @@ var jsforceConn = new jsforce.Connection({ loginUrl : process.env.base_url });
 // Attempt to login to Salesforce with environment variable credentials
 jsforceConn.login(process.env.salesforce_username,
   process.env.salesforce_password + process.env.salesforce_security_token);
+
+
+// Set up an Express-powered webserver to expose oauth and webhook endpoints
+var webserver = require(__dirname + '/components/express_webserver.js')(controller, jsforceConn);
+
 
 // Tell Cisco Spark to start sending events to this application
 require(__dirname + '/components/subscribe_events.js')(controller);
