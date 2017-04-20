@@ -51,20 +51,30 @@ describe('incoming web hook for opportunity update', () => {
     });
 
     it('should return a successful status and message when the request is of correct type', () => {
-      request.body = {
+      request.body.new = [{
         attributes: {
           type: 'Opportunity',
         },
-      };
+      }];
+
       webserverPostCallback(request, response);
 
       expect(response.status.calledWith(200)).to.be.true;
       expect(response.send.calledWith('ok')).to.be.true;
     });
 
+    it('should return a failing status and message when the request is malformed', () => {
+      request.body = {};
+
+      webserverPostCallback(request, response);
+
+      expect(response.status.calledWith(400)).to.be.true;
+      expect(response.send.calledWith('Bad Request')).to.be.true;
+    });
+
     [{ attributes: { type: 'Foo' } }, { attributes: {} }, {}].forEach((requestBody) => {
       it(`should return a failing status and message when the request is ${JSON.stringify(requestBody)}`, () => {
-        request.body = requestBody;
+        request.body.new = [requestBody];
         webserverPostCallback(request, response);
 
         expect(response.status.calledWith(400)).to.be.true;
@@ -73,24 +83,24 @@ describe('incoming web hook for opportunity update', () => {
     });
 
     it('should not retrieve a user if there is no owner id', () => {
-      request.body = {
+      request.body.new = [{
         attributes: {
           type: 'Opportunity',
         },
         ownerId: null,
-      };
+      }];
       webserverPostCallback(request, response);
       expect(jsforceConn.sobject.notCalled).to.be.true;
     });
 
     describe('when ownder id exists', () => {
       beforeEach(() => {
-        request.body = {
+        request.body.new = [{
           attributes: {
             type: 'Opportunity',
           },
           OwnerId: 1234,
-        };
+        }];
         webserverPostCallback(request, response);
       });
 

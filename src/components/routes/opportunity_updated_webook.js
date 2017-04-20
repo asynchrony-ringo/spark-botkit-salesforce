@@ -1,7 +1,7 @@
 const debug = require('debug')('botkit:incoming_webhooks');
 
 const validateRequest = (req, res) => {
-  if (!req.body.attributes || !req.body.attributes.type || req.body.attributes.type !== 'Opportunity') {
+  if (!Array.isArray(req.body.new) || !req.body.new[0].attributes || !req.body.new[0].attributes.type || req.body.new[0].attributes.type !== 'Opportunity') {
     res.status(400);
     res.send('Bad Request');
     return false;
@@ -15,6 +15,8 @@ const opportunityUpdatedWebhook = (webserver, controller, jsforceConn) => {
   debug('Configured POST /salesforce/update for receiving events');
   webserver.post('/salesforce/update', (req, res) => {
     if (!validateRequest(req, res)) { return; }
+
+    req.body = req.body.new[0];
 
     if (req.body.OwnerId) {
       jsforceConn.sobject('User').retrieve(req.body.OwnerId, (userRetrievalError, user) => {
