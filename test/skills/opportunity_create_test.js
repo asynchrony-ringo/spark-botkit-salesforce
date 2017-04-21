@@ -32,6 +32,7 @@ describe('opportunity create', () => {
     let listenerCallback;
     let userCallback;
     let create;
+    let execute;
     let find;
 
     beforeEach(() => {
