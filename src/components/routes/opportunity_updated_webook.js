@@ -1,5 +1,5 @@
 const debug = require('debug')('botkit:incoming_webhooks');
-const updateAlertController = require('../routeControllers/update_alert.js');
+const updateAlertController = require('../routeControllers/update_alert_controller.js');
 
 const sendFailureResponse = (res) => {
   res.status(400);
