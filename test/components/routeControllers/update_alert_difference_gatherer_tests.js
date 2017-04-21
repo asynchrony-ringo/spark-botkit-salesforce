@@ -40,11 +40,13 @@ describe('update alert difference gatherer', () => {
       constant: 'field',
       name: 'foo',
       title: 'bar',
+      blank: '',
     };
     const oldObject = {
       constant: 'field',
       name: 'bar',
       title: 'foo',
+      blank: '',
     };
     const formattedDiffs = updateAlertDifferenceGatherer
       .formatMessage(newObject, oldObject).split('\n');
@@ -53,35 +55,63 @@ describe('update alert difference gatherer', () => {
     expect(formattedDiffs[1]).to.equal(' * title was updated from foo to bar');
   });
 
-  it('should return correct format when values have been deleted', () => {
-    const newObject = {
+  [
+    {
       constant: 'field',
-    };
-    const oldObject = {
+    },
+    {
       constant: 'field',
-      name: 'bar',
-      title: 'foo',
-    };
-    const formattedDiffs = updateAlertDifferenceGatherer
-      .formatMessage(newObject, oldObject).split('\n');
-    expect(formattedDiffs.length).to.equal(2);
-    expect(formattedDiffs[0]).to.equal(' * name was removed');
-    expect(formattedDiffs[1]).to.equal(' * title was removed');
+      name: '',
+      title: '',
+    },
+    {
+      constant: 'field',
+      name: null,
+      title: null,
+
+    },
+  ].forEach((newObject) => {
+    it('should return correct format when values have been deleted', () => {
+      const oldObject = {
+        constant: 'field',
+        name: 'bar',
+        title: 'foo',
+      };
+      const formattedDiffs = updateAlertDifferenceGatherer
+        .formatMessage(newObject, oldObject).split('\n');
+      expect(formattedDiffs.length).to.equal(2);
+      expect(formattedDiffs[0]).to.equal(' * name was removed');
+      expect(formattedDiffs[1]).to.equal(' * title was removed');
+    });
   });
 
-  it('should return correct format when values have been added', () => {
-    const oldObject = {
+
+  [
+    {
       constant: 'field',
-    };
-    const newObject = {
+    },
+    {
       constant: 'field',
-      name: 'bar',
-      title: 'foo',
-    };
-    const formattedDiffs = updateAlertDifferenceGatherer
-      .formatMessage(newObject, oldObject).split('\n');
-    expect(formattedDiffs.length).to.equal(2);
-    expect(formattedDiffs[0]).to.equal(' * name was added: bar');
-    expect(formattedDiffs[1]).to.equal(' * title was added: foo');
+      title: '',
+      name: '',
+    },
+    {
+      constant: 'field',
+      title: null,
+      name: null,
+    },
+  ].forEach((oldObject) => {
+    it(`should return correct format when values have been added (oldObject=${JSON.stringify(oldObject)})`, () => {
+      const newObject = {
+        constant: 'field',
+        name: 'bar',
+        title: 'foo',
+      };
+      const formattedDiffs = updateAlertDifferenceGatherer
+        .formatMessage(newObject, oldObject).split('\n');
+      expect(formattedDiffs.length).to.equal(2);
+      expect(formattedDiffs[0]).to.equal(' * name was added: bar');
+      expect(formattedDiffs[1]).to.equal(' * title was added: foo');
+    });
   });
 });

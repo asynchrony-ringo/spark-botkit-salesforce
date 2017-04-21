@@ -1,3 +1,5 @@
+const doesNotExist = (obj, key) => !obj.hasOwnProperty(key) || obj[key] === '' || obj[key] === null;
+
 const updateAlertDifferenceGatherer = {
   formatMessage: (newObject = {}, oldObject = {}) => {
     const diffs = [];
@@ -7,9 +9,9 @@ const updateAlertDifferenceGatherer = {
     allFields.delete('attributes');
 
     allFields.forEach((key) => {
-      if (!newObject.hasOwnProperty(key)) {
+      if (doesNotExist(newObject, key) && !doesNotExist(oldObject, key)) {
         diffs.push(` * ${key} was removed`);
-      } else if (!oldObject.hasOwnProperty(key)) {
+      } else if (doesNotExist(oldObject, key) && !doesNotExist(newObject, key)) {
         diffs.push(` * ${key} was added: ${newObject[key]}`);
       } else if (newObject[key] !== oldObject[key]) {
         diffs.push(` * ${key} was updated from ${oldObject[key]} to ${newObject[key]}`);
