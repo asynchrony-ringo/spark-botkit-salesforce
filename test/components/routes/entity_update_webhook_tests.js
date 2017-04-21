@@ -1,4 +1,4 @@
-const testModule = require('../../../src/components/routes/entity_update_webook.js');
+const testModule = require('../../../src/components/routes/entity_update_webhook.js');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const updateAlertController = require('../../../src/components/routeControllers/update_alert_controller.js');
