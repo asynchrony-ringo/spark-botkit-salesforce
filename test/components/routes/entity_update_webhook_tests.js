@@ -32,6 +32,8 @@ describe('incoming web hook for opportunity update', () => {
     let retrieveStub;
     let request;
     let response;
+    const newList = ['something', 'second something'];
+    const oldList = ['another thing', 'second another'];
 
     beforeEach(() => {
       webserverPostCallback = webserver.post.args[0][1];
@@ -45,22 +47,19 @@ describe('incoming web hook for opportunity update', () => {
       };
 
       request = { body: {} };
+      request.body.new = newList;
+      request.body.old = oldList;
       sinon.stub(updateAlertController, 'isValid');
       updateAlertController.isValid.returns(true);
+      sinon.stub(updateAlertController, 'messageOwner');
     });
 
     afterEach(() => {
       updateAlertController.isValid.restore();
+      updateAlertController.messageOwner.restore();
     });
 
     describe('request validation', () => {
-      const newList = ['something'];
-      const oldList = ['another thing'];
-      beforeEach(() => {
-        request.body.new = newList;
-        request.body.old = oldList;
-      });
-
       it('should return a successful status and message when controller.isValid returns true', () => {
         updateAlertController.isValid.withArgs(newList, oldList).returns(true);
         webserverPostCallback(request, response);
@@ -76,100 +75,13 @@ describe('incoming web hook for opportunity update', () => {
       });
     });
 
-    it('should not retrieve a user if there is no owner id', () => {
-      request.body.new = [{
-        ownerId: null,
-      }];
-      request.body.old = [{
-        ownerId: null,
-      }];
+    it('should call controller.messageOwner for each object in the list', () => {
       webserverPostCallback(request, response);
-      expect(jsforceConn.sobject.notCalled).to.be.true;
-    });
-
-    describe('when ownder id exists', () => {
-      beforeEach(() => {
-        request.body.new = [{
-          OwnerId: 1234,
-          Name: 'really_nice_name2',
-          Id: 'even_better_id',
-        }];
-        request.body.old = [{
-          OwnerId: 1234,
-          Name: 'really_nice_name',
-          Id: 'even_better_id',
-        }];
-        webserverPostCallback(request, response);
-      });
-
-      it('should create sobject for User query', () => {
-        expect(jsforceConn.sobject.calledOnce).to.be.true;
-        expect(jsforceConn.sobject.args[0][0]).to.equal('User');
-      });
-
-      it('should retrieve user based off ownderId', () => {
-        expect(retrieveStub.calledOnce).to.be.true;
-        expect(retrieveStub.args[0][0]).to.equal(1234);
-        expect(retrieveStub.args[0][1]).to.be.a('Function');
-      });
-
-      describe('retrieve callback', () => {
-        let retrieveCallback;
-        let bot;
-
-        beforeEach(() => {
-          retrieveCallback = retrieveStub.args[0][1];
-          bot = {
-            startPrivateConversation: sinon.stub(),
-          };
-          controller.spawn = sinon.stub().returns(bot);
-        });
-
-        it('should not start a conversation if there is an error', () => {
-          retrieveCallback(true, {});
-          expect(controller.spawn.notCalled).to.be.true;
-        });
-
-        it('should spawn a bot when no error', () => {
-          retrieveCallback(null, {});
-          expect(controller.spawn.calledOnce).to.be.true;
-        });
-
-        it('should start a conversation with the returned user', () => {
-          retrieveCallback(null, { Email: 'some.email@some-domain.ext' });
-          expect(bot.startPrivateConversation.calledOnce).to.be.true;
-          expect(bot.startPrivateConversation.args[0][0]).to.deep.equal({ user: 'some.email@some-domain.ext' });
-          expect(bot.startPrivateConversation.args[0][1]).to.be.a('Function');
-        });
-
-        describe('conversation callback', () => {
-          let conversationCallback;
-          let conversation;
-
-          beforeEach(() => {
-            process.env.base_url = 'niceurl.some-domain.ext/';
-            retrieveCallback(null, { Email: 'some.email@some-domain.ext' });
-            conversationCallback = bot.startPrivateConversation.args[0][1];
-            conversation = { say: sinon.stub() };
-          });
-
-          afterEach(() => {
-            delete process.env.base_url;
-          });
-
-          it('should not say anything on error', () => {
-            conversationCallback(true, conversation);
-            expect(conversation.say.notCalled).to.be.true;
-          });
-
-          it('should tell the user an opportunity has been updated and diff message on success', () => {
-            conversationCallback(null, conversation);
-            expect(conversation.say.called).to.be.true;
-            const diff = '\nName was updated to: really_nice_name2';
-            expect(conversation.say.args[0][0]).to.equal(`An opportunity you own has been updated!${diff}\n[really_nice_name2](niceurl.some-domain.ext/even_better_id)`);
-          });
-        });
-      });
+      expect(updateAlertController.messageOwner.calledTwice).to.be.true;
+      expect(updateAlertController.messageOwner.args[0])
+        .to.deep.equal([newList[0], oldList[0], controller, jsforceConn]);
+      expect(updateAlertController.messageOwner.args[1])
+        .to.deep.equal([newList[1], oldList[1], controller, jsforceConn]);
     });
   });
 });

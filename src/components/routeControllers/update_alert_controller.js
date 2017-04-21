@@ -27,7 +27,7 @@ const updateAlertController = {
               return;
             }
             const diff = updateAlertDifferenceGatherer.formatMessage(newObj, oldObj);
-            conversation.say(`An opportunity you own has been updated!${diff}\n[${newObj.Name}](${process.env.base_url}${newObj.Id})`);
+            conversation.say(`The ${newObj.attributes.type} [${newObj.Name}](${process.env.base_url}${newObj.Id}) has been updated!\n${diff}`);
           });
       });
     }
