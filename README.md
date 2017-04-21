@@ -32,11 +32,11 @@ Triggers will execute on specific events that happen to tables within Salesforce
 
 #### Create a Trigger
 ------------------
-1. Near the top, click 'setup'
-2. In the left nav, Click Customize
-3. In the expanded Nav, find the entity you want to customize.
-4. In the next expanded tab, click 'Triggers'
-5. Click the New button
+1. Near the top, click "Setup"
+2. In the left nav, click "Customize"
+3. In the expanded nav, find and click on the entity you want to customize
+4. In the next expanded nav, click "Triggers"
+5. Click the "New" button
 6. We have created OpportunityUpdate Trigger as an example
 
 ~~~~
@@ -53,9 +53,12 @@ trigger OpportunityUpdate on Opportunity (after update) {
 #### Asynchronous Trigger (Sending Http Requests from Trigger)
 ---------------------------------------------------------------------
 
- * Asynchronous events cannot be used in triggers themselves
- * Create a new Apex Class under Develop
- * We have created SFBotHttpRequest as an example
+Asynchronous events cannot be used in triggers themselves, so you need to create one.
+
+ 1. In the left nav, click "Develop"
+ 2. In the expanded nav, click "Apex Classes"
+ 3. Click "New" in the button options bar above the table
+ 4. We have created SFBotHttpRequest as an example
 
 ~~~~
 public class SFBotHttpRequest {
