@@ -12,7 +12,7 @@ const validOpportunity = opp => opp.attributes && opp.attributes.type === 'Oppor
 
 const updateAlertController = {
   messageOwner: (newObj, oldObj, controller, jsforceConn) => {
-    if (newObj.OwnerId) {
+    if (newObj.OwnerId && oldObj.CreatedDate) {
       jsforceConn.sobject('User').retrieve(newObj.OwnerId, (userRetrievalError, user) => {
         if (userRetrievalError) {
           console.log(`Error retrieving user ${newObj.OwnerId}:`, userRetrievalError);

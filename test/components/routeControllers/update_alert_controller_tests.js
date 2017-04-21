@@ -18,6 +18,41 @@ describe('update alert controller', () => {
       controller = { spawn: sinon.stub() };
     });
 
+    it('should do nothing if new obj owner id does not exist', () => {
+      newObject = {
+        attributes: { type: 'SOME TYPE' },
+        Name: 'really_nice_name2',
+        Id: 'even_better_id',
+        CreatedDate: 'something',
+      };
+      oldObject = {
+        attributes: { type: 'SOME OLD TYPE' },
+        Name: 'really_nice_name',
+        Id: 'even_better_id',
+        CreatedDate: 'something',
+      };
+      updateAlertController.messageOwner(newObject, oldObject, controller, jsforceConn);
+      expect(jsforceConn.sobject.calledOnce).to.be.false;
+    });
+
+
+    it('should do nothing if old obj CreatedDate does not exist', () => {
+      newObject = {
+        attributes: { type: 'SOME TYPE' },
+        OwnerId: 'owner',
+        Name: 'really_nice_name2',
+        Id: 'even_better_id',
+        CreatedDate: 'something',
+      };
+      oldObject = {
+        attributes: { type: 'SOME OLD TYPE' },
+        Name: 'really_nice_name',
+        Id: 'even_better_id',
+      };
+      updateAlertController.messageOwner(newObject, oldObject, controller, jsforceConn);
+      expect(jsforceConn.sobject.calledOnce).to.be.false;
+    });
+
     describe('when owner id exists', () => {
       beforeEach(() => {
         newObject = {
@@ -25,12 +60,13 @@ describe('update alert controller', () => {
           OwnerId: 1234,
           Name: 'really_nice_name2',
           Id: 'even_better_id',
+          CreatedDate: 'something',
         };
         oldObject = {
           attributes: { type: 'SOME OLD TYPE' },
-          OwnerId: 1234,
           Name: 'really_nice_name',
           Id: 'even_better_id',
+          CreatedDate: 'something',
         };
         updateAlertController.messageOwner(newObject, oldObject, controller, jsforceConn);
       });
