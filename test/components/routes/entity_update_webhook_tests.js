@@ -1,6 +1,8 @@
-const testModule = require('../../../src/components/routes/opportunity_updated_webook.js');
+const testModule = require('../../../src/components/routes/entity_update_webook.js');
 const sinon = require('sinon');
 const expect = require('chai').expect;
+const updateAlertController = require('../../../src/components/routeControllers/update_alert_controller.js');
+
 
 describe('incoming web hook for opportunity update', () => {
   let webserver;
