@@ -243,7 +243,7 @@ describe('incoming web hook for opportunity update', () => {
             expect(conversation.say.notCalled).to.be.true;
           });
 
-          it('should tell the user an opportunity has been created and diff message on success', () => {
+          it('should tell the user an opportunity has been updated and diff message on success', () => {
             conversationCallback(null, conversation);
             expect(conversation.say.called).to.be.true;
             const diff = '\nName was updated to: really_nice_name2';
