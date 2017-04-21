@@ -25,3 +25,56 @@ To actually get the bot up and running, a public address is required. We used ng
  - run the start-dev script ./start.dev.sh
 
 You should now be able to communicate with the bot from within Cisco Spark
+
+## Alerts
+In order to receive alerts for events from Salesforce, you must first create a Trigger. Triggers reside in Salesforce as Apex code. 
+Triggers will execute on specific events that happen to tables within Salesforce (e.g. - before or after update, insert, create, and delete).
+
+#### Create a Trigger
+------------------
+1. Near the top, click 'setup'
+2. In the left nav, Click Customize
+3. In the expanded Nav, find the entity you want to customize.
+4. In the next expanded tab, click 'Triggers'
+5. Click the New button
+6. We have created OpportunityUpdate Trigger as an example
+
+~~~~
+trigger OpportunityUpdate on Opportunity (after update) {
+    Map<String, List<Opportunity>> mapToSerialize = new Map<String, List<Opportunity>>();
+    
+    //The Trigger.old & Trigger.new represent a list of records before and after being altered
+    mapToSerialize.put('new', Trigger.new);
+    mapToSerialize.put('old', Trigger.old);
+    SFBotHttpRequest.send(JSON.serialize(mapToSerialize));
+}
+~~~~
+
+#### Asynchronous Trigger (Sending Http Requests from Trigger)
+---------------------------------------------------------------------
+
+ * Asynchronous events cannot be used in triggers themselves
+ * Create a new Apex Class under Develop
+ * We have created SFBotHttpRequest as an example
+
+~~~~
+public class SFBotHttpRequest {
+
+    //the @future annotation is used to denote Async
+    @future (callout=true)
+    public static void send(String payload){
+        HttpRequest req = new HttpRequest();
+        Http http = new Http();
+        HttpResponse resp = new HttpResponse();
+        
+        req.setEndpoint('https://76854dec.ngrok.io/salesforce/update');
+        req.setMethod('POST');
+        req.setHeader('content-type', 'application/json');
+        req.setHeader('Content-Length','10240');
+        
+        
+        req.setBody(payload);
+        http.send(req);
+    }
+}
+~~~~
