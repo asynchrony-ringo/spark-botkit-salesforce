@@ -1,22 +1,22 @@
 const updateAlertDifferenceGatherer = {
-  formatMessage: (newObj, oldObj) => {
-    let diffOutput = '';
+  formatMessage: (newObject = {}, oldObject = {}) => {
     const diffs = [];
 
-    Object.keys(newObj).forEach((key) => {
-      if (typeof newObj[key] === 'string') {
-        if (newObj[key] !== oldObj[key]) {
-          diffs.push(`${key} was updated to: ${newObj[key]}`);
-        }
+    const allFields = new Set(Object.keys(newObject));
+    Object.keys(oldObject).forEach(k => allFields.add(k));
+    allFields.delete('attributes');
+
+    allFields.forEach((key) => {
+      if (!newObject.hasOwnProperty(key)) {
+        diffs.push(` * ${key} was removed`);
+      } else if (!oldObject.hasOwnProperty(key)) {
+        diffs.push(` * ${key} was added: ${newObject[key]}`);
+      } else if (newObject[key] !== oldObject[key]) {
+        diffs.push(` * ${key} was updated from ${oldObject[key]} to ${newObject[key]}`);
       }
     });
 
-    if (diffs.length > 0) {
-      diffOutput += '\n';
-      diffOutput += diffs.join('\n');
-    }
-
-    return diffOutput;
+    return diffs.join('\n');
   },
 };
 
