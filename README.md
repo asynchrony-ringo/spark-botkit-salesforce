@@ -81,3 +81,12 @@ public class SFBotHttpRequest {
     }
 }
 ~~~~
+
+You also need to authorize your endpoint with Salesforce.
+
+1. In the left nav, click "Security Controls"
+2. In the expanded nav, click "Remote Site Settings"
+3. Click the "New Remote Site" button that appears above the table
+4. Enter a name for your remote site
+5. Enter the URL for your remote site
+6. Click the "Save" button
