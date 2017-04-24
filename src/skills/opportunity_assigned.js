@@ -3,19 +3,24 @@ const opportunityAssigned = (controller, jsforceConn) => {
     jsforceConn.sobject('User')
       .find({ Email: message.user })
       .execute((userError, users) => {
-        const userId = users[0].Id;
+        if (userError) {
+          bot.reply(message, `Error: ${userError}`);
+          return;
+        }
+
         jsforceConn.sobject('Opportunity')
-          .find({ OwnerId: userId })
+          .find({ OwnerId: users[0].Id })
           .execute((oppError, assignedOpps) => {
-            if (!oppError) {
-              let oppResponse = `Found ${assignedOpps.length} Opportunities\n`;
-              assignedOpps.forEach((opp) => {
-                oppResponse += `* [${opp.Id}](${process.env.base_url}${opp.Id}): ${opp.Name}\n`;
-              });
-              bot.reply(message, oppResponse);
-            } else {
+            if (oppError) {
               bot.reply(message, `Error: ${oppError}`);
+              return;
             }
+
+            let oppResponse = `Found ${assignedOpps.length} opportunities:\n`;
+            assignedOpps.forEach((opp) => {
+              oppResponse += `* [${opp.Id}](${process.env.base_url}${opp.Id}): ${opp.Name}\n`;
+            });
+            bot.reply(message, oppResponse);
           });
       });
   });
