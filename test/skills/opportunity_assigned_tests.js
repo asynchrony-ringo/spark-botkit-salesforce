@@ -135,11 +135,31 @@ describe('opportunity assigned', () => {
               expect(messageParts.length).to.equal(testCase.length + 1);
               expect(messageParts[0]).to.equal(`Found ${testCase.length} opportunities:\n`);
 
-              for (let i = 1; i < messageParts.length; i += 1) {
+              for (let i = 1; i < testCase.length; i += 1) {
                 const opp = testCase[i - 1];
                 expect(messageParts[i]).to.equal(` [${opp.Id}](${baseUrl}${opp.Id}): ${opp.Name}\n`);
               }
             });
+          });
+
+          it('should return a top 5 summary response when more than 5 opportunities are found', () => {
+            const maxOpportunitiesCount = 5;
+            const opportunities = [];
+            for (let i = 0; i < 25; i += 1) {
+              opportunities.push({ Id: `Opp ${i}`, Name: `Test ${i}` });
+            }
+            multiPurposeCallback(null, opportunities);
+            expect(bot.reply.calledOnce).to.be.true;
+            expect(bot.reply.args[0][0]).to.deep.equal(message);
+            const responseMessage = bot.reply.args[0][1];
+            const messageParts = responseMessage.split('*');
+            expect(messageParts.length).to.equal(maxOpportunitiesCount + 1);
+            expect(messageParts[0]).to.equal('Found 25 opportunities. Here are the most recent 5:\n');
+
+            for (let i = 1; i < maxOpportunitiesCount; i += 1) {
+              const opp = opportunities[i - 1];
+              expect(messageParts[i]).to.equal(` [${opp.Id}](${baseUrl}${opp.Id}): ${opp.Name}\n`);
+            }
           });
         });
       });

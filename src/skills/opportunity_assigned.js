@@ -16,10 +16,19 @@ const opportunityAssigned = (controller, jsforceConn) => {
               return;
             }
 
-            let oppResponse = `Found ${assignedOpps.length} opportunities:\n`;
-            assignedOpps.forEach((opp) => {
+            let oppResponse = '';
+            if (assignedOpps.length > 5) {
+              oppResponse = `Found ${assignedOpps.length} opportunities. Here are the most recent 5:\n`;
+            } else {
+              oppResponse = `Found ${assignedOpps.length} opportunities:\n`;
+            }
+            const oppSummaryList = assignedOpps.length > 5 ?
+              assignedOpps.slice(0, 5) : assignedOpps;
+
+            oppSummaryList.forEach((opp) => {
               oppResponse += `* [${opp.Id}](${process.env.base_url}${opp.Id}): ${opp.Name}\n`;
             });
+
             bot.reply(message, oppResponse);
           });
       });
