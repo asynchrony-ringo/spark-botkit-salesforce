@@ -13,10 +13,10 @@ const extractSysIdFromHref = (href) => {
   return href.match('.*/([^/]*)$')[1];
 };
 
-const createOpportunity = nightmare => nightmare
+const createOpportunityAndEvaluateResponseHref = opportunityName => nightmare => nightmare
     .use(nightmareHelpers.login)
     .use(nightmareHelpers.startPrivateConversation)
-    .use(nightmareHelpers.sendMessage(`opp create <opp integration ${uuid()}> <Proposal/Price Quote> <2017-04-17T17:14:43.441Z>`))
+    .use(nightmareHelpers.sendMessage(`opp create <${opportunityName}}> <Proposal/Price Quote> <2017-04-17T17:14:43.441Z>`))
     .use(nightmareHelpers.evaluateNextSFBotResponseLinkHref);
 
 const editOpportunity = id =>
@@ -38,7 +38,7 @@ describe('opportunity', () => {
   it('should respond with opportunity status after direct message creation in a direct message and group message', () => {
     const nightmare = Nightmare({ show: true, waitTimeout: 60000 });
     return nightmare
-        .use(createOpportunity)
+        .use(createOpportunityAndEvaluateResponseHref(`opp status integration ${uuid()}`))
         .then(extractSysIdFromHref)
         .then(oppId => nightmare
             .use(nightmareHelpers.sendMessage(`opp status ${oppId}`))
@@ -61,7 +61,7 @@ describe('opportunity', () => {
   it('should send a direct message to owner on opportunity update', () => {
     const nightmare = Nightmare({ show: true, waitTimeout: 60000 });
     return nightmare
-      .use(createOpportunity)
+      .use(createOpportunityAndEvaluateResponseHref(`opp update integration ${uuid()}`))
       .then(extractSysIdFromHref)
         .then(sysId => editOpportunity(sysId))
         .then(result => nightmare
@@ -70,5 +70,19 @@ describe('opportunity', () => {
               const expectedOpportunityUpdateMessage = new RegExp(`The Opportunity ${result.Name} has been updated!`);
               expect(response).to.match(expectedOpportunityUpdateMessage);
             }));
+  });
+
+  it('should respond with owned opportunities from direct message and direct mention', () => {
+    const nightmare = Nightmare({ show: true, waitTimeout: 60000 });
+    const opportunityName = `owned opp ${uuid()}`;
+    return nightmare
+      .use(createOpportunityAndEvaluateResponseHref(opportunityName))
+      .then(() => nightmare
+          .use(nightmareHelpers.sendMessage('opp assigned'))
+          .use(nightmareHelpers.evaluateNextSFBotResponse)
+          .then((response) => {
+            const expectedResponseToMatch = new RegExp(`${opportunityName}`);
+            expect(response).to.match(expectedResponseToMatch);
+          }));
   });
 });
