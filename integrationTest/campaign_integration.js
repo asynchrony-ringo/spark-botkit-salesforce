@@ -8,7 +8,7 @@ env('.env');
 
 
 describe('campaign', () => {
-  it.only('should respond with campaign status after query in a direct message and group message', () => {
+  it('should respond with campaign status after query in a direct message and group message', () => {
     const nightmare = Nightmare({ show: true, waitTimeout: 60000 });
     return nightmare
       .use(nightmareHelpers.login)
