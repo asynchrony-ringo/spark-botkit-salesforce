@@ -52,6 +52,7 @@ describe('opportunity status', () => {
           CloseDate: '11/13/1988',
         };
 
+        process.env.base_url = 'awesomesauce.com/';
         listenerCallback(bot, message);
       });
 
@@ -61,7 +62,7 @@ describe('opportunity status', () => {
         const responseMessage = bot.reply.args[0][1];
         const messageParts = responseMessage.split('*');
         expect(messageParts.length).to.equal(4);
-        expect(messageParts[0]).to.equal('Information for opportunity: [literallyAnything](undefinedliterallyAnything)\n');
+        expect(messageParts[0]).to.equal('Information for opportunity: [literallyAnything](awesomesauce.com/literallyAnything)\n');
         expect(messageParts[1]).to.equal(' Name: Super Awesome Opportunity\n');
         expect(messageParts[2]).to.equal(' Current stage: Research\n');
         expect(messageParts[3]).to.equal(' Close Date: 11/13/1988\n');

@@ -64,6 +64,7 @@ describe('campaign status', () => {
           EndDate: '2017-05-24',
         };
 
+        process.env.base_url = 'awesomesauce.com/';
         listenerCallback(bot, message);
       });
 
@@ -73,7 +74,7 @@ describe('campaign status', () => {
         const responseMessage = bot.reply.args[0][1];
         const messageParts = responseMessage.split('*');
         expect(messageParts.length).to.equal(5);
-        expect(messageParts[0]).to.equal(`Information for campaign: [${campaignId}](undefined${campaignId})\n`);
+        expect(messageParts[0]).to.equal(`Information for campaign: [${campaignId}](awesomesauce.com/${campaignId})\n`);
         expect(messageParts[1]).to.equal(` Name: ${campaign.Name}\n`);
         expect(messageParts[2]).to.equal(` Description: ${campaign.Description}\n`);
         expect(messageParts[3]).to.equal(` Start Date: ${campaign.StartDate}\n`);
