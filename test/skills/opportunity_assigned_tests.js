@@ -30,11 +30,7 @@ describe('opportunity assigned', () => {
     let bot;
     let message;
     let listenerCallback;
-    let multiPurposeCallback;
     let execute;
-    const userError = 'Error Finding User';
-    const oppError = 'Error Finding Opportunities';
-    const users = [{ Id: 'test id' }];
     let find;
     let sort;
     let sobject;
@@ -42,16 +38,13 @@ describe('opportunity assigned', () => {
     beforeEach(() => {
       bot = { reply: sinon.spy() };
       message = { user: 'testuser' };
-
-      execute = sinon.spy((cb) => {
-        multiPurposeCallback = cb;
-      });
+      execute = sinon.stub();
       sort = sinon.stub().returns({ execute });
       find = sinon.stub();
       find.onCall(0).returns({ execute });
       find.onCall(1).returns({ sort });
 
-      sobject = sinon.spy(() => ({ find }));
+      sobject = sinon.stub().returns({ find });
       jsforceConn.sobject = sobject;
 
       listenerCallback = controller.hears.args[0][2];
@@ -62,114 +55,129 @@ describe('opportunity assigned', () => {
         listenerCallback(bot, message);
       });
 
-      it('calls jsforce connection\'s sobject User method', () => {
+      it('should call jsforce connection\'s sobject User method', () => {
         expect(sobject.calledOnce).to.be.true;
         expect(sobject.calledWith('User')).to.be.true;
       });
 
-      it('calls jsforce connection\'s find method', () => {
+      it('should call jsforce connection\'s find method', () => {
         expect(find.calledOnce).to.be.true;
         expect(find.calledWith({ Email: message.user })).to.be.true;
       });
 
-      describe('When user is invalid', () => {
-        beforeEach(() => {
-          multiPurposeCallback(userError, null);
-        });
-
-        it('should reply with user error message', () => {
-          expect(bot.reply.calledOnce).to.be.true;
-          expect(bot.reply.args[0][0]).to.deep.equal(message);
-          expect(bot.reply.args[0][1]).to.equal(`Error: ${userError}`);
-        });
+      it('should call execute after find', () => {
+        expect(execute.calledOnce).to.be.true;
+        expect(execute.args[0][0]).to.be.a('Function');
       });
 
-      describe('When user is valid', () => {
+      describe('user callback', () => {
+        let userCallback;
         beforeEach(() => {
-          multiPurposeCallback(null, users);
+          userCallback = execute.args[0][0];
         });
 
-        it('calls jsforce connection\'s sobject Opportunity method', () => {
-          expect(sobject.calledTwice).to.be.true;
-          expect(sobject.calledWith('Opportunity')).to.be.true;
+        it('should reply with error message if user invalid', () => {
+          userCallback('Error!', null);
+          expect(bot.reply.calledOnce).to.be.true;
+          expect(bot.reply.args[0][0]).to.deep.equal(message);
+          expect(bot.reply.args[0][1]).to.equal('Error: Error!');
         });
 
-        it('calls jsforce connection\'s find method with ownerId', () => {
-          expect(find.calledTwice).to.be.true;
-          expect(find.calledWith({ OwnerId: users[0].Id })).to.be.true;
-        });
+        describe('when user is valid', () => {
+          const users = [{ Id: 'test id' }];
 
-        it('should sort by created date', () => {
-          expect(sort.calledOnce).to.be.true;
-          expect(sort.args[0][0]).to.deep.equal({ CreatedDate: -1 });
-        });
-
-        describe('When Opportunity find results in error', () => {
           beforeEach(() => {
-            multiPurposeCallback(oppError, null);
+            userCallback(null, users);
           });
 
-          it('should reply with opp error message', () => {
-            expect(bot.reply.calledOnce).to.be.true;
-            expect(bot.reply.args[0][0]).to.deep.equal(message);
-            expect(bot.reply.args[0][1]).to.equal(`Error: ${oppError}`);
+          it('should call jsforce connection\'s sobject Opportunity method', () => {
+            expect(sobject.calledTwice).to.be.true;
+            expect(sobject.calledWith('Opportunity')).to.be.true;
           });
-        });
 
-        describe('When Opportunity find succeeds', () => {
-          [
-            [],
+          it('should call jsforce connection\'s find method with ownerId', () => {
+            expect(find.calledTwice).to.be.true;
+            expect(find.calledWith({ OwnerId: users[0].Id })).to.be.true;
+          });
+
+          it('should sort by created date', () => {
+            expect(sort.calledOnce).to.be.true;
+            expect(sort.args[0][0]).to.deep.equal({ CreatedDate: -1 });
+          });
+
+          it('should call execute after sort', () => {
+            expect(execute.calledTwice).to.be.true;
+            expect(execute.args[1][0]).to.be.a('Function');
+          });
+
+          describe('opportunity callback', () => {
+            let opportunityCallback;
+
+            beforeEach(() => {
+              opportunityCallback = execute.args[1][0];
+            });
+
+            it('should reply with opp error message when error', () => {
+              opportunityCallback('Opp Error!!', null);
+              expect(bot.reply.calledOnce).to.be.true;
+              expect(bot.reply.args[0][0]).to.deep.equal(message);
+              expect(bot.reply.args[0][1]).to.equal('Error: Opp Error!!');
+            });
+
             [
-              {
-                Id: 'Opp 01',
-                Name: 'Test 01',
-              },
-            ],
-            [
-              {
-                Id: 'Opp 01',
-                Name: 'Test 01',
-              },
-              {
-                Id: 'Opp 02',
-                Name: 'Test 02',
-              },
-            ],
-          ].forEach((testCase) => {
-            it(`should return correct format when result contains opportunities: ${JSON.stringify(testCase)}`, () => {
-              multiPurposeCallback(null, testCase);
+              [],
+              [
+                {
+                  Id: 'Opp 01',
+                  Name: 'Test 01',
+                },
+              ],
+              [
+                {
+                  Id: 'Opp 01',
+                  Name: 'Test 01',
+                },
+                {
+                  Id: 'Opp 02',
+                  Name: 'Test 02',
+                },
+              ],
+            ].forEach((testCase) => {
+              it(`should return correct format when result contains opportunities: ${JSON.stringify(testCase)}`, () => {
+                opportunityCallback(null, testCase);
+                expect(bot.reply.calledOnce).to.be.true;
+                expect(bot.reply.args[0][0]).to.deep.equal(message);
+                const responseMessage = bot.reply.args[0][1];
+                const messageParts = responseMessage.split('*');
+                expect(messageParts.length).to.equal(testCase.length + 1);
+                expect(messageParts[0]).to.equal(`Found ${testCase.length} opportunities:\n`);
+
+                for (let i = 1; i < testCase.length; i += 1) {
+                  const opp = testCase[i - 1];
+                  expect(messageParts[i]).to.equal(` [${opp.Id}](${baseUrl}${opp.Id}): ${opp.Name}\n`);
+                }
+              });
+            });
+
+            it('should return a top 5 summary response when more than 5 opportunities are found', () => {
+              const maxOpportunitiesCount = 5;
+              const opportunities = [];
+              for (let i = 0; i < 25; i += 1) {
+                opportunities.push({ Id: `Opp ${i}`, Name: `Test ${i}` });
+              }
+              opportunityCallback(null, opportunities);
               expect(bot.reply.calledOnce).to.be.true;
               expect(bot.reply.args[0][0]).to.deep.equal(message);
               const responseMessage = bot.reply.args[0][1];
               const messageParts = responseMessage.split('*');
-              expect(messageParts.length).to.equal(testCase.length + 1);
-              expect(messageParts[0]).to.equal(`Found ${testCase.length} opportunities:\n`);
+              expect(messageParts.length).to.equal(maxOpportunitiesCount + 1);
+              expect(messageParts[0]).to.equal('Found 25 opportunities. Here are the most recent 5:\n');
 
-              for (let i = 1; i < testCase.length; i += 1) {
-                const opp = testCase[i - 1];
+              for (let i = 1; i < maxOpportunitiesCount; i += 1) {
+                const opp = opportunities[i - 1];
                 expect(messageParts[i]).to.equal(` [${opp.Id}](${baseUrl}${opp.Id}): ${opp.Name}\n`);
               }
             });
-          });
-
-          it('should return a top 5 summary response when more than 5 opportunities are found', () => {
-            const maxOpportunitiesCount = 5;
-            const opportunities = [];
-            for (let i = 0; i < 25; i += 1) {
-              opportunities.push({ Id: `Opp ${i}`, Name: `Test ${i}` });
-            }
-            multiPurposeCallback(null, opportunities);
-            expect(bot.reply.calledOnce).to.be.true;
-            expect(bot.reply.args[0][0]).to.deep.equal(message);
-            const responseMessage = bot.reply.args[0][1];
-            const messageParts = responseMessage.split('*');
-            expect(messageParts.length).to.equal(maxOpportunitiesCount + 1);
-            expect(messageParts[0]).to.equal('Found 25 opportunities. Here are the most recent 5:\n');
-
-            for (let i = 1; i < maxOpportunitiesCount; i += 1) {
-              const opp = opportunities[i - 1];
-              expect(messageParts[i]).to.equal(` [${opp.Id}](${baseUrl}${opp.Id}): ${opp.Name}\n`);
-            }
           });
         });
       });
