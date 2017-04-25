@@ -3,7 +3,7 @@ const Nightmare = require('nightmare');
 const env = require('node-env-file');
 const nightmareHelpers = require('./nightmare_helpers.js');
 const uuid = require('uuid/v4');
-const jsforce = require('jsforce');
+const globals = require('../globals.js');
 
 env('.env');
 
@@ -19,13 +19,13 @@ const createOpportunity = nightmare => nightmare
     .use(nightmareHelpers.sendMessage(`opp create <opp integration ${uuid()}> <Proposal/Price Quote> <2017-04-17T17:14:43.441Z>`))
     .use(nightmareHelpers.evaluateNextSFBotResponseLinkHref);
 
-const editOpportunity = (id, jsforceConn) =>
+const editOpportunity = id =>
   new Promise((resolve, reject) => {
     const updatePayload = {
       Id: id,
       Name: `opp integration rename ${uuid()}`
     };
-    jsforceConn.sobject('Opportunity').update(updatePayload, (error) => {
+    globals.jsforceConn.sobject('Opportunity').update(updatePayload, (error) => {
       if (error) {
         reject(error);
       } else {
@@ -59,16 +59,11 @@ describe('opportunity', () => {
   });
 
   it('should send a direct message to owner on opportunity update', () => {
-    const jsforceConn = new jsforce.Connection({ loginUrl: process.env.base_url });
-
-    jsforceConn.login(process.env.salesforce_username,
-      process.env.salesforce_password + process.env.salesforce_security_token);
-
     const nightmare = Nightmare({ show: true, waitTimeout: 60000 });
     return nightmare
       .use(createOpportunity)
       .then(extractSysIdFromHref)
-        .then(sysId => editOpportunity(sysId, jsforceConn))
+        .then(sysId => editOpportunity(sysId))
         .then(result => nightmare
             .use(nightmareHelpers.evaluateNextSFBotResponse)
             .then((response) => {
