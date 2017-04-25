@@ -1,3 +1,26 @@
+const createMessage = (assignedOpportunities) => {
+  const maxOpportunityCount = 10;
+
+  if (assignedOpportunities.length === 0) {
+    return 'Found no opportunities.';
+  }
+
+  let message;
+  let oppMessageList;
+  if (assignedOpportunities.length <= maxOpportunityCount) {
+    message = `Found ${assignedOpportunities.length} opportunities:\n`;
+    oppMessageList = assignedOpportunities;
+  } else {
+    message = `Found ${assignedOpportunities.length} opportunities. Here are the most recent ${maxOpportunityCount}:\n`;
+    oppMessageList = assignedOpportunities.slice(0, maxOpportunityCount);
+  }
+  oppMessageList.forEach((opp) => {
+    message += `* [${opp.Id}](${process.env.base_url}${opp.Id}): ${opp.Name}\n`;
+  });
+
+  return message;
+};
+
 const opportunityAssigned = (controller, jsforceConn) => {
   controller.hears(['opp assigned'], 'direct_message,direct_mention', (bot, message) => {
     jsforceConn.sobject('User')
@@ -16,20 +39,7 @@ const opportunityAssigned = (controller, jsforceConn) => {
               return;
             }
 
-            let oppResponse = '';
-            if (assignedOpps.length > 5) {
-              oppResponse = `Found ${assignedOpps.length} opportunities. Here are the most recent 5:\n`;
-            } else {
-              oppResponse = `Found ${assignedOpps.length} opportunities:\n`;
-            }
-            const oppSummaryList = assignedOpps.length > 5 ?
-              assignedOpps.slice(0, 5) : assignedOpps;
-
-            oppSummaryList.forEach((opp) => {
-              oppResponse += `* [${opp.Id}](${process.env.base_url}${opp.Id}): ${opp.Name}\n`;
-            });
-
-            bot.reply(message, oppResponse);
+            bot.reply(message, createMessage(assignedOpps));
           });
       });
   });

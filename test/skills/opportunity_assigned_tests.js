@@ -124,8 +124,16 @@ describe('opportunity assigned', () => {
               expect(bot.reply.args[0][1]).to.equal('Error: Opp Error!!');
             });
 
+            it('should return correct format when result contains no opportunities', () => {
+              const opportunities = [];
+              opportunityCallback(null, opportunities);
+              expect(bot.reply.calledOnce).to.be.true;
+              expect(bot.reply.args[0][0]).to.deep.equal(message);
+              const responseMessage = bot.reply.args[0][1];
+              expect(responseMessage).to.equal('Found no opportunities.');
+            });
+
             [
-              [],
               [
                 {
                   Id: 'Opp 01',
@@ -159,8 +167,8 @@ describe('opportunity assigned', () => {
               });
             });
 
-            it('should return a top 5 summary response when more than 5 opportunities are found', () => {
-              const maxOpportunitiesCount = 5;
+            it('should return a top 10 summary response when more than 10 opportunities are found', () => {
+              const maxOpportunitiesCount = 10;
               const opportunities = [];
               for (let i = 0; i < 25; i += 1) {
                 opportunities.push({ Id: `Opp ${i}`, Name: `Test ${i}` });
@@ -171,7 +179,7 @@ describe('opportunity assigned', () => {
               const responseMessage = bot.reply.args[0][1];
               const messageParts = responseMessage.split('*');
               expect(messageParts.length).to.equal(maxOpportunitiesCount + 1);
-              expect(messageParts[0]).to.equal('Found 25 opportunities. Here are the most recent 5:\n');
+              expect(messageParts[0]).to.equal('Found 25 opportunities. Here are the most recent 10:\n');
 
               for (let i = 1; i < maxOpportunitiesCount; i += 1) {
                 const opp = opportunities[i - 1];
