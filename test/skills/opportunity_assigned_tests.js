@@ -36,16 +36,21 @@ describe('opportunity assigned', () => {
     const oppError = 'Error Finding Opportunities';
     const users = [{ Id: 'test id' }];
     let find;
+    let sort;
     let sobject;
 
     beforeEach(() => {
       bot = { reply: sinon.spy() };
       message = { user: 'testuser' };
+
       execute = sinon.spy((cb) => {
         multiPurposeCallback = cb;
       });
+      sort = sinon.stub().returns({ execute });
+      find = sinon.stub();
+      find.onCall(0).returns({ execute });
+      find.onCall(1).returns({ sort });
 
-      find = sinon.spy(() => ({ execute }));
       sobject = sinon.spy(() => ({ find }));
       jsforceConn.sobject = sobject;
 
@@ -92,6 +97,11 @@ describe('opportunity assigned', () => {
         it('calls jsforce connection\'s find method with ownerId', () => {
           expect(find.calledTwice).to.be.true;
           expect(find.calledWith({ OwnerId: users[0].Id })).to.be.true;
+        });
+
+        it('should sort by created date', () => {
+          expect(sort.calledOnce).to.be.true;
+          expect(sort.args[0][0]).to.deep.equal({ CreatedDate: -1 });
         });
 
         describe('When Opportunity find results in error', () => {

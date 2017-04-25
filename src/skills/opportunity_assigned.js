@@ -7,9 +7,9 @@ const opportunityAssigned = (controller, jsforceConn) => {
           bot.reply(message, `Error: ${userError}`);
           return;
         }
-
         jsforceConn.sobject('Opportunity')
           .find({ OwnerId: users[0].Id })
+          .sort({ CreatedDate: -1 })
           .execute((oppError, assignedOpps) => {
             if (oppError) {
               bot.reply(message, `Error: ${oppError}`);
