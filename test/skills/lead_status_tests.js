@@ -24,7 +24,6 @@ describe('lead status', () => {
     let listenerCallback;
     let bot;
     let message;
-    let sobject;
 
     beforeEach(() => {
       bot = { reply: sinon.spy() };
