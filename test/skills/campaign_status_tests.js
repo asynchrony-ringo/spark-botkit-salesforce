@@ -68,6 +68,10 @@ describe('campaign status', () => {
         listenerCallback(bot, message);
       });
 
+      afterEach(() => {
+        delete process.env.base_url;
+      });
+
       it('should reply with the campaign details', () => {
         expect(bot.reply.calledOnce).to.be.true;
         expect(bot.reply.args[0][0]).to.equal(message);
