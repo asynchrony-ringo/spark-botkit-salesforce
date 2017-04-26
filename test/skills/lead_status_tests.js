@@ -1,6 +1,7 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const leadStatus = require('../../src/skills/lead_status.js');
+const statusController = require('../../src/skillsControllers/status_controller.js');
 
 describe('lead status', () => {
   let controller;
@@ -20,74 +21,26 @@ describe('lead status', () => {
   });
 
   describe('listener callback', () => {
-    const leadId = 'leadId';
-    const lead = {
-      Name: 'Test Lead',
-      Email: 'test@example.com',
-    };
-    let error = null;
+    let listenerCallback;
     let bot;
     let message;
-    let listenerCallback;
     let sobject;
-    let retrieve;
 
     beforeEach(() => {
       bot = { reply: sinon.spy() };
       message = { match: [null, 'leadId'] };
-
-      retrieve = sinon.spy((id, callback) => {
-        callback(error, lead);
-      });
-
-      sobject = sinon.stub().returns({ retrieve });
-      jsforceConn.sobject = sobject;
-
+      sinon.stub(statusController, 'replyWithStatus');
       listenerCallback = controller.hears.args[0][2];
-      process.env.base_url = 'awesomesauce.com/';
     });
 
     afterEach(() => {
-      delete process.env.base_url;
+      statusController.replyWithStatus.restore();
     });
 
-    it('calls jsforce connection\'s sobject Lead method ', () => {
+    it('should call status controller\'s replyWithStatus method', () => {
       listenerCallback(bot, message);
-      expect(sobject.calledOnce).to.be.true;
-      expect(sobject.args[0][0]).to.equal('Lead');
-    });
-
-    it('calls jsforce connection\'s retrieve method', () => {
-      listenerCallback(bot, message);
-      expect(retrieve.calledOnce).to.be.true;
-      expect(retrieve.args[0][0]).to.deep.equal(leadId);
-    });
-
-    describe('when given a valid lead id', () => {
-      it('should reply with the lead details', () => {
-        listenerCallback(bot, message);
-        expect(bot.reply.calledOnce).to.be.true;
-        expect(bot.reply.args[0][0]).to.equal(message);
-        const responseMessage = bot.reply.args[0][1];
-        const messageParts = responseMessage.split('*');
-        expect(messageParts.length).to.equal(3);
-        expect(messageParts[0]).to.equal(`Information for lead: [${leadId}](awesomesauce.com/${leadId})\n`);
-        expect(messageParts[1]).to.equal(` Name: ${lead.Name}\n`);
-        expect(messageParts[2]).to.equal(` Email: ${lead.Email}\n`);
-      });
-    });
-
-    describe('when given an invalid lead id', () => {
-      beforeEach(() => {
-        error = 'Error: tribbles!!';
-      });
-
-      it('should reply with an error message', () => {
-        listenerCallback(bot, message);
-        expect(bot.reply.calledOnce).to.be.true;
-        expect(bot.reply.args[0][0]).to.equal(message);
-        expect(bot.reply.args[0][1]).to.equal(`Sorry, I was unable to retrieve the lead: ${leadId}. ${error}`);
-      });
+      expect(statusController.replyWithStatus.calledOnce).to.be.true;
+      expect(statusController.replyWithStatus.calledWith('Lead', message.match[1], ['Name', 'Email'], bot, message, jsforceConn)).to.be.true;
     });
   });
 });
