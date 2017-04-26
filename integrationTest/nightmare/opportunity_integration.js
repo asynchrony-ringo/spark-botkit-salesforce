@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const Nightmare = require('nightmare');
 const nightmareHelpers = require('./nightmare_helpers.js');
 const uuid = require('uuid/v4');
-const globals = require('../globals.js');
+const global = require('../global.js');
 
 const extractSysIdFromHref = (href) => {
   console.log('href: ', href);
@@ -21,7 +21,7 @@ const editOpportunity = id =>
       Id: id,
       Name: `opp integration rename ${uuid()}`
     };
-    globals.jsforceConn.sobject('Opportunity').update(updatePayload, (error) => {
+    global.jsforceConn.sobject('Opportunity').update(updatePayload, (error) => {
       if (error) {
         reject(error);
       } else {
