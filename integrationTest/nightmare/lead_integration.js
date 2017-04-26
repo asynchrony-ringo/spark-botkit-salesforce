@@ -1,10 +1,8 @@
 const expect = require('chai').expect;
 const Nightmare = require('nightmare');
-const env = require('node-env-file');
 const nightmareHelpers = require('./nightmare_helpers.js');
 
 const leadId = '00Q18000002t4w8';
-env('.env');
 
 describe('lead', () => {
   it.only('should respond with lead status after query in a direct message and group message', () => {
