@@ -1,12 +1,8 @@
 const expect = require('chai').expect;
 const Nightmare = require('nightmare');
-const env = require('node-env-file');
 const nightmareHelpers = require('./nightmare_helpers.js');
 const uuid = require('uuid/v4');
 const globals = require('../globals.js');
-
-env('.env');
-
 
 const extractSysIdFromHref = (href) => {
   console.log('href: ', href);
