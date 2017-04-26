@@ -43,17 +43,17 @@ describe('opportunity', () => {
         .then(oppId => nightmare
             .use(nightmareHelpers.sendMessage(`opp status ${oppId}`))
             .use(nightmareHelpers.evaluateNextSFBotResponse)
-            .then((dmOpportunityStatus) => {
-              const expectedOpportunityStatus = new RegExp(`Information for opportunity: [${oppId}]`);
-              expect(dmOpportunityStatus).to.match(expectedOpportunityStatus);
+            .then((directMessageStatusResponse) => {
+              const expectedStatusMatch = new RegExp(`Information for opportunity: [${oppId}]`);
+              expect(directMessageStatusResponse).to.match(expectedStatusMatch);
               return nightmare
                 .use(nightmareHelpers.goHome)
                 .use(nightmareHelpers.startGroupConversation)
                 .use(nightmareHelpers.sendMentionMessage(`opp status ${oppId}`))
                 .use(nightmareHelpers.evaluateNextSFBotResponse)
                 .end()
-                .then((mentionOpportunityStatus) => {
-                  expect(mentionOpportunityStatus).to.match(expectedOpportunityStatus);
+                .then((directMentionStatusResponse) => {
+                  expect(directMentionStatusResponse).to.match(expectedStatusMatch);
                 });
             }));
   });

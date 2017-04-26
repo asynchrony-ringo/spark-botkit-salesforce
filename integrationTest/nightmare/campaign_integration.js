@@ -15,17 +15,17 @@ describe('campaign', () => {
       .use(nightmareHelpers.startPrivateConversation)
       .use(nightmareHelpers.sendMessage(`campaign status ${campaignId}`))
       .use(nightmareHelpers.evaluateNextSFBotResponse)
-      .then((dmCampaignStatus) => {
-        const expectedCampaignStatus = new RegExp(`Information for campaign: [${campaignId}]`);
-        expect(dmCampaignStatus).to.match(expectedCampaignStatus);
+      .then((directMessageStatusResponse) => {
+        const expectedStatusMatch = new RegExp(`Information for campaign: [${campaignId}]`);
+        expect(directMessageStatusResponse).to.match(expectedStatusMatch);
         return nightmare
           .use(nightmareHelpers.goHome)
           .use(nightmareHelpers.startGroupConversation)
           .use(nightmareHelpers.sendMentionMessage(`campaign status ${campaignId}`))
           .use(nightmareHelpers.evaluateNextSFBotResponse)
           .end()
-          .then((mentionCampaignStatus) => {
-            expect(mentionCampaignStatus).to.match(expectedCampaignStatus);
+          .then((directMentionStatusResponse) => {
+            expect(directMentionStatusResponse).to.match(expectedStatusMatch);
           });
       });
   });
