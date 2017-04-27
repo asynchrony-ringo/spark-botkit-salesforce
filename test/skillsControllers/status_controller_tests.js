@@ -67,11 +67,5 @@ describe('status controller reply', () => {
         expect(bot.reply.args[0]).to.deep.equal([message, 'Sorry, I was unable to retrieve the entity: entity_id. custom error']);
       });
     });
-
-    describe('when there is an error', () => {
-      it('should reply with an error to the user', () => {
-
-      });
-    });
   });
 });
