@@ -2,58 +2,76 @@ const statusController = require('../../src/skillsControllers/status_controller.
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('status controller', () => {
-  const jsforceConn = {};
-  let sobject;
-  let error;
-  let bot;
-  let message;
-  let retrieve;
-  const entity = {
-    AttributeOne: 'test 01',
-    AttributeTwo: 'Get Creative!',
-  };
+describe('status controller reply', () => {
+  describe('replyWithStatus', () => {
+    const jsforceConn = {};
+    let sobject;
+    let bot;
+    let message;
+    let retrieve;
+    const entity = {
+      AttributeOne: 'test 01',
+      AttributeTwo: 'Get Creative!',
+    };
+    const entityAttributes = {
+      AttributeOne: 'Attribute One',
+      AttributeTwo: 'Attribute Two',
+    };
+    beforeEach(() => {
+      bot = { reply: sinon.spy() };
+      message = { match: [null, 'leadId'] };
 
-  beforeEach(() => {
-    bot = { reply: sinon.spy() };
-    message = { match: [null, 'leadId'] };
-
-    retrieve = sinon.spy((id, callback) => {
-      callback(error, entity);
+      retrieve = sinon.stub();
+      sobject = sinon.stub().returns({ retrieve });
+      jsforceConn.sobject = sobject;
+      process.env.base_url = 'awesomesauce.com/';
+      statusController.replyWithStatus('entity', 'entity_id', entityAttributes, bot, message, jsforceConn);
     });
 
-    sobject = sinon.stub().returns({ retrieve });
-    jsforceConn.sobject = sobject;
-    process.env.base_url = 'awesomesauce.com/';
-  });
+    afterEach(() => {
+      delete process.env.base_url;
+    });
 
-  afterEach(() => {
-    delete process.env.base_url;
-  });
+    it('should call jsforceConn\'s sobject method for the supplied object type', () => {
+      expect(sobject.calledOnce).to.be.true;
+      expect(sobject.args[0][0]).to.equal('entity');
+    });
 
-  it('should call jsforceConn\'s sobject method for the supplied object type', () => {
-    statusController.replyWithStatus('entity', 'entity_id', ['AttributeOne', 'AttributeTwo'], bot, message, jsforceConn);
-    expect(sobject.calledOnce).to.be.true;
-    expect(sobject.args[0][0]).to.equal('entity');
-  });
+    it('calls jsforce connection\'s retrieve method', () => {
+      expect(retrieve.calledOnce).to.be.true;
+      expect(retrieve.args[0][0]).to.deep.equal('entity_id');
+      expect(retrieve.args[0][1]).to.be.a('Function');
+    });
 
-  it('calls jsforce connection\'s retrieve method', () => {
-    statusController.replyWithStatus('entity', 'entity_id', ['AttributeOne', 'AttributeTwo'], bot, message, jsforceConn);
-    expect(retrieve.calledOnce).to.be.true;
-    expect(retrieve.args[0][0]).to.deep.equal('entity_id');
-  });
+    describe('retrieve callback', () => {
+      let retrieveCallback;
+      beforeEach(() => {
+        retrieveCallback = retrieve.args[0][1];
+      });
 
-  describe('when given a valid object id', () => {
-    it('should reply with the object details', () => {
-      statusController.replyWithStatus('entity', 'entity_id', ['AttributeOne', 'AttributeTwo'], bot, message, jsforceConn);
-      expect(bot.reply.calledOnce).to.be.true;
-      expect(bot.reply.args[0][0]).to.equal(message);
-      const responseMessage = bot.reply.args[0][1];
-      const messageParts = responseMessage.split('*');
-      expect(messageParts.length).to.equal(3);
-      expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
-      expect(messageParts[1]).to.equal(' Attribute One: test 01\n');
-      expect(messageParts[2]).to.equal(' Attribute Two: Get Creative!\n');
+      it('should reply with the object details when retrieve is successfull', () => {
+        retrieveCallback(null, entity);
+        expect(bot.reply.calledOnce).to.be.true;
+        expect(bot.reply.args[0][0]).to.equal(message);
+        const responseMessage = bot.reply.args[0][1];
+        const messageParts = responseMessage.split('*');
+        expect(messageParts.length).to.equal(3);
+        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
+        expect(messageParts[1]).to.equal(' Attribute One: test 01\n');
+        expect(messageParts[2]).to.equal(' Attribute Two: Get Creative!\n');
+      });
+
+      it('should reply with error message when retrieve is unsuccessful', () => {
+        retrieveCallback('custom error', null);
+        expect(bot.reply.calledOnce).to.be.true;
+        expect(bot.reply.args[0]).to.deep.equal([message, 'Sorry, I was unable to retrieve the entity: entity_id. custom error']);
+      });
+    });
+
+    describe('when there is an error', () => {
+      it('should reply with an error to the user', () => {
+
+      });
     });
   });
 });

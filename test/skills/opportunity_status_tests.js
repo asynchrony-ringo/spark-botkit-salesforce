@@ -6,6 +6,11 @@ const statusController = require('../../src/skillsControllers/status_controller.
 describe('opportunity status', () => {
   let controller;
   let jsforceConn;
+  const oppAttributes = {
+    Name: 'Name',
+    CloseDate: 'Close Date',
+    StageName: 'Stage Name',
+  };
 
   beforeEach(() => {
     controller = { hears: sinon.spy() };
@@ -39,7 +44,7 @@ describe('opportunity status', () => {
     it('should call status controller\'s replyWithStatus method', () => {
       listenerCallback(bot, message);
       expect(statusController.replyWithStatus.calledOnce).to.be.true;
-      expect(statusController.replyWithStatus.calledWith('Opportunity', message.match[1], ['Name', 'StageName', 'CloseDate'], bot, message, jsforceConn)).to.be.true;
+      expect(statusController.replyWithStatus.args[0]).to.deep.equal(['Opportunity', message.match[1], oppAttributes, bot, message, jsforceConn]);
     });
   });
 });

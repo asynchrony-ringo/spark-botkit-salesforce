@@ -6,6 +6,10 @@ const statusController = require('../../src/skillsControllers/status_controller.
 describe('lead status', () => {
   let controller;
   let jsforceConn;
+  const leadAttributes = {
+    Name: 'Name',
+    Email: 'Email',
+  };
 
   beforeEach(() => {
     controller = { hears: sinon.spy() };
@@ -39,7 +43,7 @@ describe('lead status', () => {
     it('should call status controller\'s replyWithStatus method', () => {
       listenerCallback(bot, message);
       expect(statusController.replyWithStatus.calledOnce).to.be.true;
-      expect(statusController.replyWithStatus.calledWith('Lead', message.match[1], ['Name', 'Email'], bot, message, jsforceConn)).to.be.true;
+      expect(statusController.replyWithStatus.args[0]).to.deep.equal(['Lead', message.match[1], leadAttributes, bot, message, jsforceConn]);
     });
   });
 });
