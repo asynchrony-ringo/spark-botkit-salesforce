@@ -4,7 +4,11 @@ const statusController = {
       if (!error) {
         let responseMessage = `Information for ${objectType}: [${objectId}](${process.env.base_url}${objectId})\n`;
         Object.keys(attributes).forEach((attributeKey) => {
-          responseMessage += `* ${attributes[attributeKey]}: ${object[attributeKey]}\n`;
+          let value = object[attributeKey];
+          if (value === null || value === undefined) {
+            value = '';
+          }
+          responseMessage += `* ${attributes[attributeKey]}: ${value}\n`;
         });
 
         bot.reply(message, responseMessage);

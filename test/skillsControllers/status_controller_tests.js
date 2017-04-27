@@ -61,6 +61,45 @@ describe('status controller reply', () => {
         expect(messageParts[2]).to.equal(' Attribute Two: Get Creative!\n');
       });
 
+      [null, undefined, ''].forEach((blankValue) => {
+        it('should give empty fields blank values when there is an empty value set', () => {
+          retrieveCallback(null, { AttributeOne: 'a value', AttributeTwo: blankValue });
+          expect(bot.reply.calledOnce).to.be.true;
+          expect(bot.reply.args[0][0]).to.equal(message);
+          const responseMessage = bot.reply.args[0][1];
+          const messageParts = responseMessage.split('*');
+          expect(messageParts.length).to.equal(3);
+          expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
+          expect(messageParts[1]).to.equal(' Attribute One: a value\n');
+          expect(messageParts[2]).to.equal(' Attribute Two: \n');
+        });
+      });
+
+      it('should give empty fields blank values when there is no value set', () => {
+        retrieveCallback(null, { AttributeOne: 'a value' });
+        expect(bot.reply.calledOnce).to.be.true;
+        expect(bot.reply.args[0][0]).to.equal(message);
+        const responseMessage = bot.reply.args[0][1];
+        const messageParts = responseMessage.split('*');
+        expect(messageParts.length).to.equal(3);
+        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
+        expect(messageParts[1]).to.equal(' Attribute One: a value\n');
+        expect(messageParts[2]).to.equal(' Attribute Two: \n');
+      });
+
+      it('should give field false value when value is false', () => {
+        retrieveCallback(null, { AttributeOne: 'a value', AttributeTwo: false });
+        expect(bot.reply.calledOnce).to.be.true;
+        expect(bot.reply.args[0][0]).to.equal(message);
+        const responseMessage = bot.reply.args[0][1];
+        const messageParts = responseMessage.split('*');
+        expect(messageParts.length).to.equal(3);
+        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
+        expect(messageParts[1]).to.equal(' Attribute One: a value\n');
+        expect(messageParts[2]).to.equal(' Attribute Two: false\n');
+      });
+
+
       it('should reply with error message when retrieve is unsuccessful', () => {
         retrieveCallback('custom error', null);
         expect(bot.reply.calledOnce).to.be.true;
