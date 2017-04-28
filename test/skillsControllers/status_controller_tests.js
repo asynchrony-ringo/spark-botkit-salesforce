@@ -19,7 +19,7 @@ describe('status controller reply', () => {
     };
     beforeEach(() => {
       bot = { reply: sinon.spy() };
-      message = { match: [null, 'leadId'] };
+      message = { match: [null, 'entity_id'] };
 
       retrieve = sinon.stub();
       sobject = sinon.stub().returns({ retrieve });
