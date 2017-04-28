@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
-const opportunityOwned = require('../../src/skills/lead_owned.js');
+const leadOwned = require('../../src/skills/lead_owned.js');
 const ownedController = require('../../src/skillsControllers/owned_controller.js');
 
 
@@ -13,7 +13,7 @@ describe('opportunity owned', () => {
     controller = { hears: sinon.spy() };
 
     jsforceConn = {};
-    opportunityOwned(controller, jsforceConn);
+    leadOwned(controller, jsforceConn);
     process.env.base_url = baseUrl;
   });
 
