@@ -4,7 +4,7 @@ const leadOwned = require('../../src/skills/lead_owned.js');
 const ownedController = require('../../src/skillsControllers/owned_controller.js');
 
 
-describe('opportunity owned', () => {
+describe('lead owned', () => {
   const baseUrl = 'baseUrl/';
   let controller;
   let jsforceConn;
