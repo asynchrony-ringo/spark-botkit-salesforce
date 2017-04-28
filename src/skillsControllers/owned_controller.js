@@ -8,7 +8,7 @@ const createMessage = (entities, description) => {
   let message;
   let entityList;
   if (entities.length <= maxEntityCount) {
-    message = `Found ${entities.length} opportunities:\n`;
+    message = `Found ${entities.length} ${description}:\n`;
     entityList = entities;
   } else {
     message = `Found ${entities.length} ${description}. Here are the most recent ${maxEntityCount}:\n`;

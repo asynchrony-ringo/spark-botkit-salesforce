@@ -140,7 +140,7 @@ describe('status controller reply', () => {
               const responseMessage = bot.reply.args[0][1];
               const messageParts = responseMessage.split('*');
               expect(messageParts.length).to.equal(testCase.length + 1);
-              expect(messageParts[0]).to.equal(`Found ${testCase.length} opportunities:\n`);
+              expect(messageParts[0]).to.equal(`Found ${testCase.length} entity_description:\n`);
 
               for (let i = 1; i < testCase.length; i += 1) {
                 const opp = testCase[i - 1];
