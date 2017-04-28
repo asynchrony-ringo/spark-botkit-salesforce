@@ -1,20 +1,18 @@
 const statusController = {
   replyWithStatus: (objectType, objectId, attributes, bot, message, jsforceConn) => {
     jsforceConn.sobject(objectType).retrieve(objectId, (error, object) => {
-      if (!error) {
-        let responseMessage = `Information for ${objectType}: [${objectId}](${process.env.base_url}${objectId})\n`;
-        Object.keys(attributes).forEach((attributeKey) => {
-          let value = object[attributeKey];
-          if (value === null || value === undefined) {
-            value = '';
-          }
-          responseMessage += `* ${attributes[attributeKey]}: ${value}\n`;
-        });
+      if (error) { bot.reply(message, `Sorry, I was unable to retrieve the ${objectType}: ${objectId}. ${error}`); return; }
 
-        bot.reply(message, responseMessage);
-      } else {
-        bot.reply(message, `Sorry, I was unable to retrieve the ${objectType}: ${objectId}. ${error}`);
-      }
+      let responseMessage = `Information for ${objectType}: [${objectId}](${process.env.base_url}${objectId})\n`;
+      Object.keys(attributes).forEach((attributeKey) => {
+        let value = object[attributeKey];
+        if (value === null || value === undefined) {
+          value = '';
+        }
+        responseMessage += `* ${attributes[attributeKey]}: ${value}\n`;
+      });
+
+      bot.reply(message, responseMessage);
     });
   },
 };
