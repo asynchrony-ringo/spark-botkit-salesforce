@@ -133,7 +133,7 @@ describe('update alert controller', () => {
             expect(conversation.say.notCalled).to.be.true;
           });
 
-          it('should tell the user an opportunity has been updated and diff message on success', () => {
+          it('should tell the user the entity has been updated and diff message on success', () => {
             const expectedDifferenceMessage = 'Here is a really good difference message';
             updateAlertDifferenceGatherer.formatMessage
               .withArgs(newObject, oldObject)
@@ -149,16 +149,18 @@ describe('update alert controller', () => {
   });
 
   describe('isValid', () => {
-    it('should return a successful status and message when the request is of correct type', () => {
+    it('should return a successful status and message when type and ids are the same', () => {
       const newObjectList = [{
         attributes: {
-          type: 'Opportunity',
+          type: 'Some awesome type',
         },
+        Id: 1,
       }];
       const oldObjectList = [{
         attributes: {
-          type: 'Opportunity',
+          type: 'Some awesome type',
         },
+        Id: 1,
       }];
       const result = updateAlertController.isValid(newObjectList, oldObjectList);
       expect(result).to.be.true;
@@ -181,59 +183,59 @@ describe('update alert controller', () => {
         description: 'new and old empty objects',
       },
       {
-        new: [{ attributed: {} }],
-        old: [{ attributed: {} }],
+        new: [{ attributes: { type: 'type' } }],
+        old: [{ attributes: { type: 'type' } }],
+        description: 'no ids',
+      },
+      {
+        new: [{ attributes: {}, Id: 'id' }],
+        old: [{ attributes: {}, Id: 'id' }],
         description: 'empty attributes object',
       },
       {
-        new: [{ attributes: { type: 'Foo' } }],
-        old: [{ attributes: { type: 'Foo' } }],
-        description: 'neither has correct attribute',
+        new: [{ attributes: { type: 'Foo' }, Id: 'id' }],
+        old: [{ attributes: { type: 'Bar' }, Id: 'id' }],
+        description: 'type attributes do not match',
       },
       {
-        new: [{ attributes: { type: 'Opportunity' } }],
+        new: [{ attributes: { type: 'type' }, Id: 'id' }],
         old: [],
         description: 'new has more than old',
       },
       {
         new: [],
-        old: [{ attributes: { type: 'Opportunity' } }],
+        old: [{ attributes: { type: 'type' }, Id: 'id' }],
         description: 'old has more than new',
       },
       {
-        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }],
-        old: [{ attributes: { type: 'Opportunity' }, Id: '2' }],
+        new: [{ attributes: { type: 'type' }, Id: '1' }],
+        old: [{ attributes: { type: 'type' }, Id: '2' }],
         description: 'different ids',
       },
       {
-        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Opportunity' }, Id: '2' }],
-        old: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Opportunity' }, Id: '3' }],
+        new: [{ attributes: { type: 'type' }, Id: '1' }, { attributes: { type: 'type' }, Id: '2' }],
+        old: [{ attributes: { type: 'type' }, Id: '1' }, { attributes: { type: 'type' }, Id: '3' }],
         description: 'different ids after the first',
       },
       {
-        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }],
+        new: [{ attributes: { type: 'type' }, Id: '1' }],
         old: [{ Id: '1' }],
         description: 'old element does not contain attributes attribute',
       },
       {
-        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }],
+        new: [{ attributes: { type: 'type' }, Id: '1' }],
         old: [{ attributes: {}, Id: '1' }],
         description: 'old element does not contain type attribute',
       },
       {
-        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }],
-        old: [{ attributes: { type: 'Foo' }, Id: '1' }],
-        description: 'old element is not an opportunity',
+        new: [{ attributes: { type: 'type' }, Id: '1' }, { attributes: { type: 'Different Type' }, Id: '2' }],
+        old: [{ attributes: { type: 'type' }, Id: '1' }, { attributes: { type: 'type' }, Id: '2' }],
+        description: 'second elements types do not match',
       },
       {
-        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Bar' }, Id: '2' }],
-        old: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Opportunity' }, Id: '2' }],
-        description: 'second new element is not of type Opportunity',
-      },
-      {
-        new: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Opportunity' }, Id: '2' }],
-        old: [{ attributes: { type: 'Opportunity' }, Id: '1' }, { attributes: { type: 'Bar' }, Id: '2' }],
-        description: 'second old element is not of type Opportunity',
+        new: [{ attributes: { type: 'type' }, Id: '1' }, { attributes: { type: 'type' }, Id: '21' }],
+        old: [{ attributes: { type: 'type' }, Id: '1' }, { attributes: { type: 'type' }, Id: '2' }],
+        description: 'second elements ids do not match',
       },
     ].forEach((testCase) => {
       it(`should return false when ${testCase.description}`, () => {

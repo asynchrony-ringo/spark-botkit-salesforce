@@ -1,21 +1,16 @@
 const updateAlertDifferenceGatherer = require('./update_alert_difference_gatherer.js');
 
-const validOpportunityListsAlign = (newOppList, oldOppList) => {
-  for (let i = 0; i < newOppList.length; i += 1) {
-    if (newOppList[i].Id !== oldOppList[i].Id) return false;
-  }
+const validateEntity = entity => entity.attributes && entity.attributes.type && entity.Id;
 
-  return true;
-};
-
-const validOpportunity = opp => opp.attributes && opp.attributes.type === 'Opportunity';
+const validateEntitiesConsistent = (newEntity, oldEntity) =>
+  newEntity.Id === oldEntity.Id && newEntity.attributes.type === oldEntity.attributes.type;
 
 const updateAlertController = {
-  messageOwner: (newObj, oldObj, controller, jsforceConn) => {
-    if (newObj.OwnerId && oldObj.CreatedDate) {
-      jsforceConn.sobject('User').retrieve(newObj.OwnerId, (userRetrievalError, user) => {
+  messageOwner: (newEntity, oldEntity, controller, jsforceConn) => {
+    if (newEntity.OwnerId && oldEntity.CreatedDate) {
+      jsforceConn.sobject('User').retrieve(newEntity.OwnerId, (userRetrievalError, user) => {
         if (userRetrievalError) {
-          console.log(`Error retrieving user ${newObj.OwnerId}:`, userRetrievalError);
+          console.log(`Error retrieving user ${newEntity.OwnerId}:`, userRetrievalError);
           return;
         }
         const bot = controller.spawn({});
@@ -26,34 +21,28 @@ const updateAlertController = {
               console.log(`Error starting conversation with ${user.Email}:`, startConversationError);
               return;
             }
-            const diff = updateAlertDifferenceGatherer.formatMessage(newObj, oldObj);
-            conversation.say(`The ${newObj.attributes.type} [${newObj.Name}](${process.env.base_url}${newObj.Id}) has been updated!\n${diff}`);
+            const diff = updateAlertDifferenceGatherer.formatMessage(newEntity, oldEntity);
+            conversation.say(`The ${newEntity.attributes.type} [${newEntity.Name}](${process.env.base_url}${newEntity.Id}) has been updated!\n${diff}`);
           });
       });
     }
   },
-  isValid: (newObj, oldObj) => {
-    if (!Array.isArray(newObj) || !Array.isArray(oldObj)) {
+  isValid: (newEntities, oldEntities) => {
+    if (!Array.isArray(newEntities) || !Array.isArray(oldEntities)) {
       return false;
     }
-    if (newObj.length !== oldObj.length) {
+    if (newEntities.length !== oldEntities.length) {
       return false;
     }
-    if (!validOpportunityListsAlign(newObj, oldObj)) {
-      return false;
+    for (let i = 0; i < newEntities.length; i += 1) {
+      const oldEntity = oldEntities[i];
+      const newEntity = newEntities[i];
+      if (!validateEntity(newEntity)
+        || !validateEntity(oldEntity)
+        || !validateEntitiesConsistent(newEntity, oldEntity)) {
+        return false;
+      }
     }
-
-    const newOpportunities = newObj;
-    const oldOpportunities = oldObj;
-
-    for (let i = 0; i < newOpportunities.length; i += 1) {
-      if (!validOpportunity(newOpportunities[i])) { return false; }
-    }
-
-    for (let i = 0; i < oldOpportunities.length; i += 1) {
-      if (!validOpportunity(oldOpportunities[i])) { return false; }
-    }
-
     return true;
   },
 };
