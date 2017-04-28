@@ -1,18 +1,18 @@
-const createMessage = (assignedOpportunities) => {
+const createMessage = (ownedOpportunities) => {
   const maxOpportunityCount = 10;
 
-  if (assignedOpportunities.length === 0) {
+  if (ownedOpportunities.length === 0) {
     return 'Found no opportunities.';
   }
 
   let message;
   let oppMessageList;
-  if (assignedOpportunities.length <= maxOpportunityCount) {
-    message = `Found ${assignedOpportunities.length} opportunities:\n`;
-    oppMessageList = assignedOpportunities;
+  if (ownedOpportunities.length <= maxOpportunityCount) {
+    message = `Found ${ownedOpportunities.length} opportunities:\n`;
+    oppMessageList = ownedOpportunities;
   } else {
-    message = `Found ${assignedOpportunities.length} opportunities. Here are the most recent ${maxOpportunityCount}:\n`;
-    oppMessageList = assignedOpportunities.slice(0, maxOpportunityCount);
+    message = `Found ${ownedOpportunities.length} opportunities. Here are the most recent ${maxOpportunityCount}:\n`;
+    oppMessageList = ownedOpportunities.slice(0, maxOpportunityCount);
   }
   oppMessageList.forEach((opp) => {
     message += `* [${opp.Id}](${process.env.base_url}${opp.Id}): ${opp.Name}\n`;
@@ -21,8 +21,8 @@ const createMessage = (assignedOpportunities) => {
   return message;
 };
 
-const opportunityAssigned = (controller, jsforceConn) => {
-  controller.hears(['opp assigned'], 'direct_message,direct_mention', (bot, message) => {
+const opportunityOwned = (controller, jsforceConn) => {
+  controller.hears(['opp owned'], 'direct_message,direct_mention', (bot, message) => {
     jsforceConn.sobject('User')
       .find({ Email: message.user })
       .execute((userError, users) => {
@@ -33,16 +33,16 @@ const opportunityAssigned = (controller, jsforceConn) => {
         jsforceConn.sobject('Opportunity')
           .find({ OwnerId: users[0].Id })
           .sort({ CreatedDate: -1 })
-          .execute((oppError, assignedOpps) => {
+          .execute((oppError, ownedOpps) => {
             if (oppError) {
               bot.reply(message, `Error: ${oppError}`);
               return;
             }
 
-            bot.reply(message, createMessage(assignedOpps));
+            bot.reply(message, createMessage(ownedOpps));
           });
       });
   });
 };
 
-module.exports = opportunityAssigned;
+module.exports = opportunityOwned;

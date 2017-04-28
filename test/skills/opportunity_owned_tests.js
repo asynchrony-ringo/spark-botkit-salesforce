@@ -1,8 +1,8 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
-const opportunityAssigned = require('../../src/skills/opportunity_assigned.js');
+const opportunityOwned = require('../../src/skills/opportunity_owned.js');
 
-describe('opportunity assigned', () => {
+describe('opportunity owned', () => {
   const baseUrl = 'baseUrl/';
   let controller;
   let jsforceConn;
@@ -11,7 +11,7 @@ describe('opportunity assigned', () => {
     controller = { hears: sinon.spy() };
 
     jsforceConn = {};
-    opportunityAssigned(controller, jsforceConn);
+    opportunityOwned(controller, jsforceConn);
     process.env.base_url = baseUrl;
   });
 
@@ -21,7 +21,7 @@ describe('opportunity assigned', () => {
 
   it('should register hear listener on controller', () => {
     expect(controller.hears.calledOnce).to.be.true;
-    expect(controller.hears.args[0][0]).to.deep.equal(['opp assigned']);
+    expect(controller.hears.args[0][0]).to.deep.equal(['opp owned']);
     expect(controller.hears.args[0][1]).to.equal('direct_message,direct_mention');
     expect(controller.hears.args[0][2]).to.be.a('function');
   });
