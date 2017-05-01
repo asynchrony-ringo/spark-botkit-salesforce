@@ -3,7 +3,6 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 const updateAlertController = require('../../../src/components/routeControllers/update_alert_controller.js');
 
-
 describe('incoming web hook for opportunity update', () => {
   let webserver;
   let jsforceConn;
@@ -12,13 +11,18 @@ describe('incoming web hook for opportunity update', () => {
   beforeEach(() => {
     webserver = {
       post: sinon.stub(),
+      use: sinon.spy(),
     };
 
-    jsforceConn = {
-    };
-    controller = {
-    };
+    jsforceConn = {};
+    controller = {};
     testModule(webserver, controller, jsforceConn);
+  });
+
+  it('should register parsing middleware', () => {
+    expect(webserver.use.calledOnce);
+    expect(webserver.use.args[0][0]).to.equal('/salesforce/update');
+    expect(webserver.use.args[0][1]).to.be.an('Array');
   });
 
   it('should register a post event', () => {
