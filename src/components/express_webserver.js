@@ -2,8 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const debug = require('debug')('botkit:webserver');
 const hmacSHA1 = require('crypto-js/hmac-sha1');
-const utf8 = require('crypto-js/enc-utf8');
-
 
 module.exports = function (controller, jsforceConn) {
   const webserver = express();
