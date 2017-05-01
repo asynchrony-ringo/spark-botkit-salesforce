@@ -9,7 +9,7 @@ const addSHA1ToRequest = (req, res, buff, encoding) => {
 module.exports = (webserver, controller) => {
   debug('Configured POST /ciscospark/receive url for receiving events');
 
-  webserver.use('/salesforce/update', [
+  webserver.use('/ciscospark/receive', [
     bodyParser.json({ verify: addSHA1ToRequest }),
     bodyParser.urlencoded({ extended: true })]);
 
