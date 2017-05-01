@@ -20,7 +20,7 @@ describe('incoming web hook for opportunity update', () => {
   });
 
   it('should register parsing middleware', () => {
-    expect(webserver.use.calledOnce);
+    expect(webserver.use.calledOnce).to.be.true;
     expect(webserver.use.args[0][0]).to.equal('/salesforce/update');
     expect(webserver.use.args[0][1]).to.be.an('Array');
   });
