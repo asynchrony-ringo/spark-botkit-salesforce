@@ -1,16 +1,12 @@
 const debug = require('debug')('botkit:incoming_webhooks');
 const bodyParser = require('body-parser');
-const hmacSHA1 = require('crypto-js/hmac-sha1');
-
-const addSHA1ToRequest = (req, res, buff, encoding) => {
-  req.hmacSHA1 = hmacSHA1(buff.toString(encoding), process.env.secret).toString();
-};
+const hmacSha1Calculator = require('../routeControllers/hmac_sha1_calculator');
 
 module.exports = (webserver, controller) => {
   debug('Configured POST /ciscospark/receive url for receiving events');
 
   webserver.use('/ciscospark/receive', [
-    bodyParser.json({ verify: addSHA1ToRequest }),
+    bodyParser.json({ verify: hmacSha1Calculator.addToRequest }),
     bodyParser.urlencoded({ extended: true })]);
 
   webserver.post('/ciscospark/receive', (req, res) => {
