@@ -61,16 +61,17 @@ Asynchronous events cannot be used in triggers themselves, so you need to create
  4. We have created SFBotHttpRequest as an example
 
 ~~~~
-public class SFBotHttpRequest {
-
+public class SFBotHttpRequest{
+    
     //the @future annotation is used to denote Async
     @future (callout=true)
-    public static void send(String payload){
+    public static void send(String updateUrl, String payload){
+        
         HttpRequest req = new HttpRequest();
         Http http = new Http();
         HttpResponse resp = new HttpResponse();
         
-        req.setEndpoint('https://76854dec.ngrok.io/salesforce/update');
+        req.setEndpoint(updateUrl);
         req.setMethod('POST');
         req.setHeader('content-type', 'application/json');
         req.setHeader('Content-Length','10240');
