@@ -48,7 +48,7 @@ describe('lead owned', () => {
     it('should call status controller\'s replyWithStatus method', () => {
       listenerCallback(bot, message);
       expect(ownedController.replyWithStatus.calledOnce).to.be.true;
-      expect(ownedController.replyWithStatus.args[0]).to.deep.equal(['Lead', 'leads', bot, message, jsforceConn]);
+      expect(ownedController.replyWithStatus.args[0]).to.deep.equal(['Lead', 'Leads', bot, message, jsforceConn]);
     });
   });
 });
