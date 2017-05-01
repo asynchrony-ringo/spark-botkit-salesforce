@@ -48,7 +48,7 @@ describe('campaign owned', () => {
     it('should call status controller\'s replyWithStatus method', () => {
       listenerCallback(bot, message);
       expect(ownedController.replyWithStatus.calledOnce).to.be.true;
-      expect(ownedController.replyWithStatus.args[0]).to.deep.equal(['Campaign', 'campaigns', bot, message, jsforceConn]);
+      expect(ownedController.replyWithStatus.args[0]).to.deep.equal(['Campaign', 'Campaigns', bot, message, jsforceConn]);
     });
   });
 });
