@@ -10,18 +10,18 @@ const updateAlertDifferenceGatherer = {
     Object.keys(oldObject).forEach(k => allFields.add(k));
     allFields.delete('attributes');
 
-    Array.from(allFields).sort().forEach((key) => {
-      if (fieldsToIgnore.includes(key)) {
-        return;
-      }
-      if (doesNotExist(newObject, key) && !doesNotExist(oldObject, key)) {
-        diffs.push(` * ${key} was removed`);
-      } else if (doesNotExist(oldObject, key) && !doesNotExist(newObject, key)) {
-        diffs.push(` * ${key} was added: ${newObject[key]}`);
-      } else if (newObject[key] !== oldObject[key]) {
-        diffs.push(` * ${key} was updated from ${oldObject[key]} to ${newObject[key]}`);
-      }
-    });
+    Array.from(allFields)
+      .filter(k => !fieldsToIgnore.includes(k))
+      .sort()
+      .forEach((key) => {
+        if (doesNotExist(newObject, key) && !doesNotExist(oldObject, key)) {
+          diffs.push(` * ${key} was removed`);
+        } else if (doesNotExist(oldObject, key) && !doesNotExist(newObject, key)) {
+          diffs.push(` * ${key} was added: ${newObject[key]}`);
+        } else if (newObject[key] !== oldObject[key]) {
+          diffs.push(` * ${key} was updated from ${oldObject[key]} to ${newObject[key]}`);
+        }
+      });
 
     return diffs.join('\n');
   },
