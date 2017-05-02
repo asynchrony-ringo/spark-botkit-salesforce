@@ -1,5 +1,5 @@
 const opportunityCreate = (controller, jsforceConn) => {
-  controller.hears(['opp create <(.*)> <(.*)> <(.*)>'], 'direct_message', (bot, message) => {
+  controller.hears(['^opp create <(.*)> <(.*)> <(.*)>$'], 'direct_message', (bot, message) => {
     jsforceConn.sobject('User').find({ Email: message.user }).execute((userError, users) => {
       if (userError) {
         bot.reply(message, `Error finding user: ${userError}`);

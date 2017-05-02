@@ -1,7 +1,7 @@
 const statusController = require('../skillsControllers/status_controller.js');
 
 const campaignStatus = (controller, jsforceConn) => {
-  controller.hears(['campaign status (.*)'], 'direct_message,direct_mention', (bot, message) => {
+  controller.hears(['^campaign status (.*)$'], 'direct_message,direct_mention', (bot, message) => {
     const campaignAttributes = {
       Name: 'Name',
       Description: 'Description',
