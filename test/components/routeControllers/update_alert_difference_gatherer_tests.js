@@ -136,4 +136,18 @@ describe('update alert difference gatherer', () => {
     expect(formattedDiffs[2]).to.equal(' * title was updated from foo to bar');
     expect(formattedDiffs[3]).to.equal(' * zebra was updated from savanna to stripe');
   });
+
+  it('should ignore "CompareName" field', () => {
+    const newObject = {
+      CompareName: 'FOO',
+      name: 'foo',
+    };
+    const oldObject = {
+      name: 'bar',
+    };
+    const formattedDiffs = updateAlertDifferenceGatherer
+      .formatMessage(newObject, oldObject).split('\n');
+    expect(formattedDiffs.length).to.equal(1);
+    expect(formattedDiffs[0]).to.equal(' * name was updated from bar to foo');
+  });
 });

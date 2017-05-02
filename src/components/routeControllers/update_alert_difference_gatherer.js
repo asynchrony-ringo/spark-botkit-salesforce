@@ -1,3 +1,5 @@
+const fieldsToIgnore = ['CompareName'];
+
 const doesNotExist = (obj, key) => !obj.hasOwnProperty(key) || obj[key] === '' || obj[key] === null;
 
 const updateAlertDifferenceGatherer = {
@@ -9,6 +11,9 @@ const updateAlertDifferenceGatherer = {
     allFields.delete('attributes');
 
     Array.from(allFields).sort().forEach((key) => {
+      if (fieldsToIgnore.includes(key)) {
+        return;
+      }
       if (doesNotExist(newObject, key) && !doesNotExist(oldObject, key)) {
         diffs.push(` * ${key} was removed`);
       } else if (doesNotExist(oldObject, key) && !doesNotExist(newObject, key)) {
