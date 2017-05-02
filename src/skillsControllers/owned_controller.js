@@ -27,14 +27,21 @@ const ownedController = {
     jsforceConn.sobject('User')
       .find({ Email: message.user })
       .execute((userError, users) => {
-        if (userError) { bot.reply(message, `Error: ${userError}`); return; }
+        if (userError) {
+          bot.reply(message, `Sorry, I was unable to retrieve your assigned ${description}. ${userError}`);
+          return;
+        }
 
         const user = users[0];
         jsforceConn.sobject(objectType)
           .find({ OwnerId: user.Id })
           .sort({ CreatedDate: -1 })
           .execute((entitiesError, ownedEntities) => {
-            if (entitiesError) { bot.reply(message, `Error: ${entitiesError}`); return; }
+            if (entitiesError) {
+              bot.reply(message, `Sorry, I was unable to retrieve your assigned ${description}. ${entitiesError}`);
+              return;
+            }
+
             bot.reply(message, createMessage(ownedEntities, description));
           });
       });

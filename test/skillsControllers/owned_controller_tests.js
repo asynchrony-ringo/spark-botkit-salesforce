@@ -3,6 +3,8 @@ const expect = require('chai').expect;
 const ownedController = require('../../src/skillsControllers/owned_controller.js');
 
 describe('status controller reply', () => {
+  const table = 'entity';
+  const description = 'entity_description';
   describe('replyWithStatus', () => {
     let bot;
     let message;
@@ -25,7 +27,7 @@ describe('status controller reply', () => {
       jsforceConn = {};
       jsforceConn.sobject = sobject;
       process.env.base_url = 'awesomesauce.com/';
-      ownedController.replyWithStatus('entity', 'entity_description', bot, message, jsforceConn);
+      ownedController.replyWithStatus(table, description, bot, message, jsforceConn);
     });
 
     afterEach(() => {
@@ -61,7 +63,7 @@ describe('status controller reply', () => {
         it('should reply with error message if user invalid', () => {
           expect(bot.reply.calledOnce).to.be.true;
           expect(bot.reply.args[0][0]).to.deep.equal(message);
-          expect(bot.reply.args[0][1]).to.equal('Error: Error!');
+          expect(bot.reply.args[0][1]).to.equal(`Sorry, I was unable to retrieve your assigned ${description}. Error!`);
         });
       });
 
@@ -103,7 +105,7 @@ describe('status controller reply', () => {
             entityCallback('Entity Error!!', null);
             expect(bot.reply.calledOnce).to.be.true;
             expect(bot.reply.args[0][0]).to.deep.equal(message);
-            expect(bot.reply.args[0][1]).to.equal('Error: Entity Error!!');
+            expect(bot.reply.args[0][1]).to.equal(`Sorry, I was unable to retrieve your assigned ${description}. Entity Error!!`);
           });
 
           it('should return correct format when result contains no entities', () => {
