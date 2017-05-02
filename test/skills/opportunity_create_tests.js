@@ -1,6 +1,7 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const opportunityCreate = require('../../src/skills/opportunity_create.js');
+const createController = require('../../src/skillsControllers/create_controller.js');
 
 describe('opportunity create', () => {
   const baseUrl = 'baseUrl/';
@@ -48,6 +49,9 @@ describe('opportunity create', () => {
         ],
         user: 'somebody@example.com',
       };
+
+      sinon.spy(createController, 'replyWithStatus');
+
       create = sinon.stub();
       execute = sinon.spy((cb) => {
         userCallback = cb;
@@ -59,6 +63,14 @@ describe('opportunity create', () => {
 
       listenerCallback = controller.hears.args[0][2];
       listenerCallback(bot, message);
+    });
+
+    afterEach(() => {
+      createController.replyWithStatus.restore();
+    });
+
+    it('calls createControllers replyWithStatus function', () => {
+      expect(createController.replyWithStatus.calledOnce).to.be.true;
     });
 
     describe('user lookup', () => {

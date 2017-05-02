@@ -7,6 +7,7 @@ describe('create controller ', () => {
   const description = 'Entity';
   const entity = {
     field: 'value',
+    Name: 'Great Name',
   };
   const userEmail = 'somebody@example.com';
   const baseUrl = 'yes.url/';
@@ -29,7 +30,7 @@ describe('create controller ', () => {
     jsforceConn = {};
     jsforceConn.sobject = sinon.stub();
     jsforceConn.sobject.withArgs(table).returns({ create });
-    jsforceConn.sobject.withArgs('Users').returns({ find });
+    jsforceConn.sobject.withArgs('User').returns({ find });
     find.withArgs({ Email: userEmail }).returns({ execute });
 
     process.env.base_url = baseUrl;
@@ -58,7 +59,7 @@ describe('create controller ', () => {
 
       it('should create sobject with useId added as owner', () => {
         expect(create.calledOnce).to.be.true;
-        const expectedEntity = { field: 'value', OwnerId: 'userId' };
+        const expectedEntity = { field: 'value', Name: 'Great Name', OwnerId: 'userId' };
         expect(create.args[0][0]).to.deep.equal(expectedEntity);
         expect(create.args[0][1]).to.be.a('Function');
       });
@@ -85,7 +86,7 @@ describe('create controller ', () => {
           });
 
           it('should return success with link to created opportunity', () => {
-            expect(bot.reply.args[0][1]).to.equal(`Success: [bogusId](${baseUrl}bogusId)`);
+            expect(bot.reply.args[0][1]).to.equal(`Success: [Great Name](${baseUrl}bogusId)`);
           });
         });
       });
@@ -98,7 +99,7 @@ describe('create controller ', () => {
       });
 
       it('should return with an error', () => {
-        expect(bot.reply.args[0][1]).to.equal(`Sorry, I could not create the ${description}. Nooo!`);
+        expect(bot.reply.args[0][1]).to.equal('Error finding user: Nooo!');
       });
     });
   });

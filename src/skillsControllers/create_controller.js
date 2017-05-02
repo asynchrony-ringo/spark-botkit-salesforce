@@ -1,11 +1,11 @@
 const createController = {
 
   replyWithStatus: (tableName, record, description, bot, message, jsforceConn) => {
-    jsforceConn.sobject('Users')
+    jsforceConn.sobject('User')
       .find({ Email: message.user })
       .execute((userError, users) => {
         if (userError) {
-          bot.reply(message, `Sorry, I could not create the ${description}. ${userError}`);
+          bot.reply(message, `Error finding user: ${userError}`);
           return;
         }
 
@@ -15,7 +15,7 @@ const createController = {
           if (error) {
             bot.reply(message, `Error: ${error}`);
           } else {
-            bot.reply(message, `Success: [${result.id}](${process.env.base_url}${result.id})`);
+            bot.reply(message, `Success: [${record.Name}](${process.env.base_url}${result.id})`);
           }
         });
       });
