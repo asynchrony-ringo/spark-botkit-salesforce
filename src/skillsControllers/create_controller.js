@@ -5,7 +5,7 @@ const createController = {
       .find({ Email: message.user })
       .execute((userError, users) => {
         if (userError) {
-          bot.reply(message, `Error finding user: ${userError}`);
+          bot.reply(message, `Sorry, I could not create the ${description}. ${userError}`);
           return;
         }
 
@@ -13,9 +13,9 @@ const createController = {
         const creationRecord = Object.assign({}, record, { OwnerId: user.Id });
         jsforceConn.sobject(tableName).create(creationRecord, (error, result) => {
           if (error) {
-            bot.reply(message, `Error: ${error}`);
+            bot.reply(message, `Sorry, I could not create the ${description}. ${error}`);
           } else {
-            bot.reply(message, `Success: [${record.Name}](${process.env.base_url}${result.id})`);
+            bot.reply(message, `Success, ${description} created: [${result.id}](${process.env.base_url}${result.id})`);
           }
         });
       });

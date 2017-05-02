@@ -76,7 +76,7 @@ describe('create controller ', () => {
           });
 
           it('should return with an error', () => {
-            expect(bot.reply.args[0][1]).to.equal('Error: error');
+            expect(bot.reply.args[0][1]).to.equal('Sorry, I could not create the Entity. error');
           });
         });
 
@@ -86,7 +86,7 @@ describe('create controller ', () => {
           });
 
           it('should return success with link to created opportunity', () => {
-            expect(bot.reply.args[0][1]).to.equal(`Success: [Great Name](${baseUrl}bogusId)`);
+            expect(bot.reply.args[0][1]).to.equal(`Success, Entity created: [bogusId](${baseUrl}bogusId)`);
           });
         });
       });
@@ -99,7 +99,7 @@ describe('create controller ', () => {
       });
 
       it('should return with an error', () => {
-        expect(bot.reply.args[0][1]).to.equal('Error finding user: Nooo!');
+        expect(bot.reply.args[0][1]).to.equal('Sorry, I could not create the Entity. Nooo!');
       });
     });
   });
