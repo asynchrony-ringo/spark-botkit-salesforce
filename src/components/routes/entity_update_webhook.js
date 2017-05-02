@@ -20,10 +20,10 @@ const opportunityUpdatedWebhook = (webserver, controller, jsforceConn) => {
       sendFailureResponse(res);
       return;
     }
-    const newOppList = req.body.new;
-    const oldOppList = req.body.old;
-    for (let i = 0; i < newOppList.length; i += 1) {
-      updateAlertController.messageOwner(newOppList[i], oldOppList[i], controller, jsforceConn);
+    const newList = req.body.new;
+    const oldList = req.body.old;
+    for (let i = 0; i < newList.length; i += 1) {
+      updateAlertController.messageOwner(newList[i], oldList[i], controller, jsforceConn);
     }
     sendSuccessResponse(res);
   });
