@@ -8,7 +8,7 @@ const updateAlertDifferenceGatherer = {
     Object.keys(oldObject).forEach(k => allFields.add(k));
     allFields.delete('attributes');
 
-    allFields.forEach((key) => {
+    Array.from(allFields).sort().forEach((key) => {
       if (doesNotExist(newObject, key) && !doesNotExist(oldObject, key)) {
         diffs.push(` * ${key} was removed`);
       } else if (doesNotExist(oldObject, key) && !doesNotExist(newObject, key)) {
