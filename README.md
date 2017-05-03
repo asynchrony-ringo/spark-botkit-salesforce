@@ -15,8 +15,8 @@ run the bot either in production or the dev environment.
 To actually get the bot up and running, a public address is required. We used ngrok in order to create a public address that can be utilized.
 
  - Install ngrok globally via npm (```npm install -g ngrok```).
- - Create a public address on port 3000 - ```ngrok http 3000```
-    - NOTE: the docker instance must be running on port 3000 in order for communication to the bot to work
+ - Create a public address on port 3001 - ```ngrok http 3001```
+    - NOTE: the docker instance must be running on port 3001 in order for communication to the bot to work
  - Copy the https forwarding address in the ngrok log (```https://<########>.ngrok.io```)
  - Paste that address as the ```public_address``` variable in the ```.env``` file of the project
  - run npm install
