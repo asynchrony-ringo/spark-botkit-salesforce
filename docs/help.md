@@ -2,7 +2,7 @@
 * Create an Opportunity:
     * `opp create [name] [stage] [close date]`
         * **name:** label describing your opportunity
-        * **stage:** must belong to the picklist for opportunity stages in your instance of Salesforce
+        * **stage:** should belong to the picklist for opportunity stages in your instance of Salesforce
         * **close date:** should be in the format of YYYY-MM-DD
 
 ###View
