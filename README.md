@@ -38,15 +38,17 @@ Triggers will execute on specific events that happen to tables within Salesforce
 4. In the next expanded nav, click "Triggers"
 5. Click the "New" button
 6. We have created OpportunityUpdate Trigger as an example
+    1. [See all of our example Triggers](https://gitlab.asynchrony.com/proj-1274/spark-botkit-salesforce/tree/master/docs)
+    2. Note: You will have to update the call to SFBotHttpRequest.send to pass in the public address of your bot
 
 ~~~~
-trigger OpportunityUpdate on Opportunity (after update) {
+trigger OpportunityUpdateSFBot on Opportunity (after update) {
     Map<String, List<Opportunity>> mapToSerialize = new Map<String, List<Opportunity>>();
-    
-    //The Trigger.old & Trigger.new represent a list of records before and after being altered
+
+    // The Trigger.old & Trigger.new represent a list of records before and after being altered
     mapToSerialize.put('new', Trigger.new);
     mapToSerialize.put('old', Trigger.old);
-    SFBotHttpRequest.send(JSON.serialize(mapToSerialize));
+    SFBotHttpRequest.send('https://234c2e59.ngrok.io/salesforce/update', JSON.serialize(mapToSerialize));
 }
 ~~~~
 
@@ -62,23 +64,20 @@ Asynchronous events cannot be used in triggers themselves, so you need to create
 
 ~~~~
 public class SFBotHttpRequest{
-    
-    //the @future annotation is used to denote Async
+    // the @future annotation is used to denote Async
     @future (callout=true)
-    public static void send(String updateUrl, String payload){
-        
-        HttpRequest req = new HttpRequest();
-        Http http = new Http();
-        HttpResponse resp = new HttpResponse();
-        
-        req.setEndpoint(updateUrl);
-        req.setMethod('POST');
-        req.setHeader('content-type', 'application/json');
-        req.setHeader('Content-Length','10240');
-        
-        
-        req.setBody(payload);
-        http.send(req);
+    public static void send(String updateUrl, String payload) {
+    HttpRequest req = new HttpRequest();
+    Http http = new Http();
+    HttpResponse resp = new HttpResponse();
+
+    req.setEndpoint(updateUrl);
+    req.setMethod('POST');
+    req.setHeader('content-type', 'application/json');
+    req.setHeader('Content-Length','10240');
+
+    req.setBody(payload);
+    http.send(req);
     }
 }
 ~~~~
