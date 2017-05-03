@@ -1,0 +1,8 @@
+trigger OpportunityUpdateSFBot on Opportunity (after update) {
+    Map<String, List<Opportunity>> mapToSerialize = new Map<String, List<Opportunity>>();
+
+    // The Trigger.old & Trigger.new represent a list of records before and after being altered
+    mapToSerialize.put('new', Trigger.new);
+    mapToSerialize.put('old', Trigger.old);
+    SFBotHttpRequest.send('https://234c2e59.ngrok.io/salesforce/update', JSON.serialize(mapToSerialize));
+}

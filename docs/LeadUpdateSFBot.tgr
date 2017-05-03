@@ -1,0 +1,8 @@
+trigger LeadUpdateSFBot on Lead (after update) {
+    Map<String, List<Lead>> mapToSerialize = new Map<String, List<Lead>>();
+
+    // The Trigger.old & Trigger.new represent a list of records before and after being altered
+    mapToSerialize.put('new', Trigger.new);
+    mapToSerialize.put('old', Trigger.old);
+    SFBotHttpRequest.send('https://72f276b9.ngrok.io/salesforce/update', JSON.serialize(mapToSerialize));
+}
