@@ -50,7 +50,7 @@ describe('opportunity create', () => {
       createController.replyWithStatus.restore();
     });
 
-    it('calls createControllers replyWithStatus function', () => {
+    it('calls createController\'s replyWithStatus function', () => {
       expect(createController.replyWithStatus.calledOnce).to.be.true;
       expect(createController.replyWithStatus.args[0]).to.deep.equal([
         'Opportunity',

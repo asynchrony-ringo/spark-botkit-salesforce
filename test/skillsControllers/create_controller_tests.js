@@ -57,14 +57,14 @@ describe('create controller ', () => {
         userCallback(null, [{ Id: 'userId' }]);
       });
 
-      it('should create sobject with useId added as owner', () => {
+      it('should create sobject with userId added as owner', () => {
         expect(create.calledOnce).to.be.true;
         const expectedEntity = { field: 'value', Name: 'Great Name', OwnerId: 'userId' };
         expect(create.args[0][0]).to.deep.equal(expectedEntity);
         expect(create.args[0][1]).to.be.a('Function');
       });
 
-      describe('create opportunity callback', () => {
+      describe('create entity callback', () => {
         let createCallback;
         beforeEach(() => {
           createCallback = create.args[0][1];
@@ -85,7 +85,7 @@ describe('create controller ', () => {
             createCallback(null, { id: 'bogusId' });
           });
 
-          it('should return success with link to created opportunity', () => {
+          it('should return success with link to created entity', () => {
             expect(bot.reply.args[0][1]).to.equal(`Success, Entity created: [bogusId](${baseUrl}bogusId)`);
           });
         });
