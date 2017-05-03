@@ -20,7 +20,7 @@ describe('opportunity status', () => {
 
   it('should register hear listener on controller', () => {
     expect(controller.hears.calledOnce).to.be.true;
-    expect(controller.hears.args[0][0]).to.deep.equal(['opp status[ ]+(.*)[ ]*']);
+    expect(controller.hears.args[0][0]).to.deep.equal(['opp status (.*)']);
     expect(controller.hears.args[0][1]).to.equal('direct_message,direct_mention');
     expect(controller.hears.args[0][2]).to.be.a('function');
   });
@@ -32,7 +32,7 @@ describe('opportunity status', () => {
 
     beforeEach(() => {
       bot = { reply: sinon.spy() };
-      message = { match: [null, 'opportunityId'] };
+      message = { match: [null, ' opportunityId  '] };
       sinon.stub(statusController, 'replyWithStatus');
       listenerCallback = controller.hears.args[0][2];
     });
@@ -44,7 +44,7 @@ describe('opportunity status', () => {
     it('should call status controller\'s replyWithStatus method', () => {
       listenerCallback(bot, message);
       expect(statusController.replyWithStatus.calledOnce).to.be.true;
-      expect(statusController.replyWithStatus.args[0]).to.deep.equal(['Opportunity', message.match[1], oppAttributes, bot, message, jsforceConn]);
+      expect(statusController.replyWithStatus.args[0]).to.deep.equal(['Opportunity', 'opportunityId', oppAttributes, bot, message, jsforceConn]);
     });
   });
 });

@@ -19,7 +19,7 @@ describe('lead status', () => {
 
   it('should register hear listener on controller', () => {
     expect(controller.hears.calledOnce).to.be.true;
-    expect(controller.hears.args[0][0]).to.deep.equal(['lead status[ ]+(.*)[ ]*']);
+    expect(controller.hears.args[0][0]).to.deep.equal(['lead status (.*)']);
     expect(controller.hears.args[0][1]).to.equal('direct_message,direct_mention');
     expect(controller.hears.args[0][2]).to.be.a('function');
   });
@@ -31,7 +31,7 @@ describe('lead status', () => {
 
     beforeEach(() => {
       bot = { reply: sinon.spy() };
-      message = { match: [null, 'leadId'] };
+      message = { match: [null, ' leadId  '] };
       sinon.stub(statusController, 'replyWithStatus');
       listenerCallback = controller.hears.args[0][2];
     });
@@ -43,7 +43,7 @@ describe('lead status', () => {
     it('should call status controller\'s replyWithStatus method', () => {
       listenerCallback(bot, message);
       expect(statusController.replyWithStatus.calledOnce).to.be.true;
-      expect(statusController.replyWithStatus.args[0]).to.deep.equal(['Lead', message.match[1], leadAttributes, bot, message, jsforceConn]);
+      expect(statusController.replyWithStatus.args[0]).to.deep.equal(['Lead', 'leadId', leadAttributes, bot, message, jsforceConn]);
     });
   });
 });

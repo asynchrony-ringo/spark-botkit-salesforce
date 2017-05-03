@@ -21,7 +21,7 @@ describe('campaign status', () => {
 
   it('should register hear listener on controller', () => {
     expect(controller.hears.calledOnce).to.be.true;
-    expect(controller.hears.args[0][0]).to.deep.equal(['campaign status[ ]+(.*)[ ]*']);
+    expect(controller.hears.args[0][0]).to.deep.equal(['campaign status (.*)']);
     expect(controller.hears.args[0][1]).to.equal('direct_message,direct_mention');
     expect(controller.hears.args[0][2]).to.be.a('function');
   });
@@ -33,7 +33,7 @@ describe('campaign status', () => {
 
     beforeEach(() => {
       bot = { reply: sinon.spy() };
-      message = { match: [null, 'campaignId'] };
+      message = { match: [null, ' campaignId  '] };
       sinon.stub(statusController, 'replyWithStatus');
       listenerCallback = controller.hears.args[0][2];
     });
@@ -45,7 +45,7 @@ describe('campaign status', () => {
     it('should call status controller\'s replyWithStatus method', () => {
       listenerCallback(bot, message);
       expect(statusController.replyWithStatus.calledOnce).to.be.true;
-      expect(statusController.replyWithStatus.args[0]).to.deep.equal(['Campaign', message.match[1], campaignAttributes, bot, message, jsforceConn]);
+      expect(statusController.replyWithStatus.args[0]).to.deep.equal(['Campaign', 'campaignId', campaignAttributes, bot, message, jsforceConn]);
     });
   });
 });
