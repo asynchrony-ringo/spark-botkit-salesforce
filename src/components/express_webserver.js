@@ -6,7 +6,7 @@ module.exports = function (controller, jsforceConn) {
   const webserver = express();
 
   webserver.use(express.static('public'));
-  webserver.listen(process.env.PORT || 3000, null, () => {
+  webserver.listen(process.env.PORT || 3001, null, () => {
     debug(`Express webserver configured and listening at http://localhost:${process.env.PORT}` || 3000);
   });
 

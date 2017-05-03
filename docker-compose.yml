@@ -2,7 +2,7 @@ version: '2'
 services:
   salesforce:
     ports:
-      - "3000:3000"
+      - "3001:3001"
     image: asynchronyringo/salesforce-spark-bot
     volumes:
       - .env:/app/.env
