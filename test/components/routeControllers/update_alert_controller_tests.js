@@ -141,7 +141,7 @@ describe('update alert controller', () => {
 
             conversationCallback(null, conversation);
             expect(conversation.say.called).to.be.true;
-            expect(conversation.say.args[0][0]).to.equal(`The SOME TYPE [even_better_id](niceurl.some-domain.ext/even_better_id) has been updated!\n${expectedDifferenceMessage}`);
+            expect(conversation.say.args[0][0]).to.equal(`The SOME TYPE [even_better_id](niceurl.some-domain.ext//even_better_id) has been updated!\n${expectedDifferenceMessage}`);
           });
         });
       });

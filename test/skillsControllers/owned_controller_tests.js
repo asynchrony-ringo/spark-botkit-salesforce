@@ -146,7 +146,7 @@ describe('status controller reply', () => {
 
               for (let i = 1; i < testCase.length; i += 1) {
                 const opp = testCase[i - 1];
-                expect(messageParts[i]).to.equal(` [${opp.Id}](${process.env.base_url}${opp.Id}): ${opp.Name}\n`);
+                expect(messageParts[i]).to.equal(` [${opp.Id}](${process.env.base_url}/${opp.Id}): ${opp.Name}\n`);
               }
             });
           });
@@ -167,7 +167,7 @@ describe('status controller reply', () => {
 
             for (let i = 1; i < maxEntityCount; i += 1) {
               const entity = entities[i - 1];
-              expect(messageParts[i]).to.equal(` [${entity.Id}](${process.env.base_url}${entity.Id}): ${entity.Name}\n`);
+              expect(messageParts[i]).to.equal(` [${entity.Id}](${process.env.base_url}/${entity.Id}): ${entity.Name}\n`);
             }
           });
         });

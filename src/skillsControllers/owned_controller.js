@@ -16,7 +16,7 @@ const createMessage = (entities, description) => {
   }
 
   entityList.forEach((entity) => {
-    message += `* [${entity.Id}](${process.env.base_url}${entity.Id}): ${entity.Name}\n`;
+    message += `* [${entity.Id}](${process.env.base_url}/${entity.Id}): ${entity.Name}\n`;
   });
 
   return message;

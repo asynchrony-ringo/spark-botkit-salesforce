@@ -22,7 +22,7 @@ const updateAlertController = {
               return;
             }
             const diff = updateAlertDifferenceGatherer.formatMessage(newEntity, oldEntity);
-            conversation.say(`The ${newEntity.attributes.type} [${newEntity.Id}](${process.env.base_url}${newEntity.Id}) has been updated!\n${diff}`);
+            conversation.say(`The ${newEntity.attributes.type} [${newEntity.Id}](${process.env.base_url}/${newEntity.Id}) has been updated!\n${diff}`);
           });
       });
     }

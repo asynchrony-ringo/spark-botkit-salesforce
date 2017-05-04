@@ -56,7 +56,7 @@ describe('status controller reply', () => {
         const responseMessage = bot.reply.args[0][1];
         const messageParts = responseMessage.split('*');
         expect(messageParts.length).to.equal(3);
-        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
+        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com//entity_id)\n');
         expect(messageParts[1]).to.equal(' Attribute One: test 01\n');
         expect(messageParts[2]).to.equal(' Attribute Two: Get Creative!\n');
       });
@@ -69,7 +69,7 @@ describe('status controller reply', () => {
           const responseMessage = bot.reply.args[0][1];
           const messageParts = responseMessage.split('*');
           expect(messageParts.length).to.equal(3);
-          expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
+          expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com//entity_id)\n');
           expect(messageParts[1]).to.equal(' Attribute One: a value\n');
           expect(messageParts[2]).to.equal(' Attribute Two: \n');
         });
@@ -82,7 +82,7 @@ describe('status controller reply', () => {
         const responseMessage = bot.reply.args[0][1];
         const messageParts = responseMessage.split('*');
         expect(messageParts.length).to.equal(3);
-        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
+        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com//entity_id)\n');
         expect(messageParts[1]).to.equal(' Attribute One: a value\n');
         expect(messageParts[2]).to.equal(' Attribute Two: \n');
       });
@@ -94,7 +94,7 @@ describe('status controller reply', () => {
         const responseMessage = bot.reply.args[0][1];
         const messageParts = responseMessage.split('*');
         expect(messageParts.length).to.equal(3);
-        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com/entity_id)\n');
+        expect(messageParts[0]).to.equal('Information for entity: [entity_id](awesomesauce.com//entity_id)\n');
         expect(messageParts[1]).to.equal(' Attribute One: a value\n');
         expect(messageParts[2]).to.equal(' Attribute Two: false\n');
       });

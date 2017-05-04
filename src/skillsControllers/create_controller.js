@@ -15,7 +15,7 @@ const createController = {
           if (error) {
             bot.reply(message, `Sorry, I could not create the ${description}. ${error}`);
           } else {
-            bot.reply(message, `Success, ${description} created: [${result.id}](${process.env.base_url}${result.id})`);
+            bot.reply(message, `Success, ${description} created: [${result.id}](${process.env.base_url}/${result.id})`);
           }
         });
       });

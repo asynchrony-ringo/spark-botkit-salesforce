@@ -86,7 +86,7 @@ describe('create controller ', () => {
           });
 
           it('should return success with link to created entity', () => {
-            expect(bot.reply.args[0][1]).to.equal(`Success, Entity created: [bogusId](${baseUrl}bogusId)`);
+            expect(bot.reply.args[0][1]).to.equal(`Success, Entity created: [bogusId](${baseUrl}/bogusId)`);
           });
         });
       });
