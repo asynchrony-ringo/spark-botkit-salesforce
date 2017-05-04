@@ -83,8 +83,8 @@ Triggers will execute on specific events that happen to tables within Salesforce
 5. Click the "New" button
 6. We have created OpportunityUpdate Trigger as an example
     1. [See all of our example Triggers](https://gitlab.asynchrony.com/proj-1274/spark-botkit-salesforce/tree/master/docs)
-    2. Note: You will have to update the call to SFBotHttpRequest.send to pass in the public address of your bot
-
+    2. NOTE: You will have to update the call to SFBotHttpRequest.send to pass in the public address of your bot
+7. Save the Trigger
 ~~~~
 trigger OpportunityUpdateSFBot on Opportunity (after update) {
     Map<String, List<Opportunity>> mapToSerialize = new Map<String, List<Opportunity>>();
