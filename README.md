@@ -24,7 +24,6 @@ This project is aimed at bridging Spark and Salesforce via Spark bot technology.
     ```
     access_token=[bot_access_token_from_spark]
     base_url=[salesforce_instance_base_url]
-    bot_name=[bot_name_from_spark]
     salesforce_username=[salesforce_user_created_above]
     salesforce_password=[salesforce_password_created_above]
     salesforce_security_token=[salesforce_security_token_created_above]
