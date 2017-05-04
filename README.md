@@ -25,7 +25,7 @@ This project is aimed at bridging Spark and Salesforce via Spark bot technology.
 To actually get the bot up and running, a public address is required. We used ngrok in order to create a public address that can be utilized.
 
  - Install ngrok globally via npm: `npm install -g ngrok`
- - Create a public address on port 3000: `ngrok http 3000`
+ - Create a public address on port 3001: `ngrok http 3001`
  - ngrok should create a session with a unique `http` and `https` forwarding address (something like: `https://bb94ea5d.ngrok.io`)
  - Add the `https` forwarding address to your `.env` file as follows:
 
