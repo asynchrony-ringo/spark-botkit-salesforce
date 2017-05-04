@@ -139,3 +139,19 @@ You also need to authorize your endpoint with Salesforce.
 4. Enter a name for your remote site
 5. Enter the URL for your remote site
 6. Click the "Save" button
+
+---
+
+## Creating new skills
+
+In order to create additional functionality for the bot, you will have to create a new skill that listens to a particular message and
+acts accordingly. The existing skills can be found in the `src/skills` directory. The project is set up in a way that any skills located
+within this directory will be registered with the Spark bot. 
+
+Within a newly created skill, you will need to call `.hears` and provide a regex pattern that will match a certain message the user sends
+to the bot in Spark, as well as a callback that will fire when the message is received. The callback takes both the bot and the message.
+In order to have the bot send a message to the user, you can use the bot's `.reply(message, "custom message")` function, which takes
+the original message and your bot's response.
+
+You can interact with Salesforce by using [JSForce](https://jsforce.github.io/document/) - a Javascript library built to interact with
+multiple Salesforce APIs. 
