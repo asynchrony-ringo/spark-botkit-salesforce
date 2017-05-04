@@ -21,7 +21,7 @@ To actually get the bot up and running, a public address is required. We used ng
  - Paste that address as the ```public_address``` variable in the ```.env``` file of the project
  - run npm install
  - make sure you have docker installed
- - ``` docker build -t asynchronyringo/salesforce-spark-bot . ```
+ - ``` docker build -t cisco/salesforce-spark-bot . ```
  - run the start-dev script ./start.dev.sh
 
 You should now be able to communicate with the bot from within Cisco Spark
