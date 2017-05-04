@@ -4,5 +4,6 @@ services:
     ports:
       - "3001:3001"
     image: asynchronyringo/salesforce-spark-bot
+    container_name: salesforce-spark-bot
     volumes:
       - .env:/app/.env

@@ -1,7 +1,6 @@
 version: '2'
 services:
   salesforce:
-    ports:
-      - "3001:3001"
     volumes:
       - .:/app
+      - /app/node_modules
