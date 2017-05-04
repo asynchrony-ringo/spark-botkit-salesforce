@@ -2,6 +2,10 @@ This project is aimed at bridging Spark and Salesforce via Spark bot technology.
 
 ## Getting Started
 
+#### Create a Development Salesforce User to Authenticate Your Bot
+ 1. Login to your Salesforce instance.
+ 2. [Follow these instructions](https://help.salesforce.com/articleView?id=adding_new_users.htm&type=0) on creating a new User in Salesforce
+ 
 #### Create the Bot
 
  - [Create a bot in the Spark for Developers site](https://developer.ciscospark.com/add-bot.html). You'll receive an `access token`.
