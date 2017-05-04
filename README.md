@@ -49,6 +49,23 @@ You should now be able to communicate with the bot from within Cisco Spark.
 
 - You can ask your bot for help (`@BotName help`) to display the available commands within Spark:
 
+#### Create
+* Create an Opportunity:
+    * `opp create [name] [stage] [close date]`
+        * **name:** label describing your opportunity
+        * **stage:** should belong to the picklist for opportunity stages in your instance of Salesforce
+        * **close date:** should be in the format of YYYY-MM-DD
+
+#### View
+* View the status of an Opportunity, Lead, or Campaign by internal ID:
+    * `opp status sys_id`
+    * `lead status sys_id`
+    * `campaign status sys_id`
+* View the Opportunities, Leads, or Campaigns that are owned by you:
+    * `opp owned`
+    * `lead owned`
+    * `campaign owned`
+
 ## Alerts
 In order to receive alerts for events from Salesforce, you must first create a Trigger. Triggers reside in Salesforce as Apex code. 
 Triggers will execute on specific events that happen to tables within Salesforce (e.g. - before or after update, insert, create, and delete).
