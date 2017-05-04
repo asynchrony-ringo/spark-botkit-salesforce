@@ -5,6 +5,11 @@ This project is aimed at bridging Spark and Salesforce via Spark bot technology.
 #### Create a Development Salesforce User to Authenticate Your Bot
  1. Login to your Salesforce instance.
  2. [Follow these instructions](https://help.salesforce.com/articleView?id=adding_new_users.htm&type=0) on creating a new User in Salesforce
+ 3. You will need to log in as the user you create in order to generate a security token
+    1. Once logged in, go to the settings for your profile
+    2. Under 'Personal' in the left hand navigation, select 'Reset my security token'
+    3. Click on the 'Reset my security token' button
+    4. Save this security token somewhere - it will be needed in the environment variables
  
 #### Create the Bot
 
@@ -20,8 +25,9 @@ This project is aimed at bridging Spark and Salesforce via Spark bot technology.
     access_token=[bot_access_token_from_spark]
     base_url=[salesforce_instance_base_url]
     bot_name=[bot_name_from_spark]
-    salesforce_username=[salesforce_user]
-    salesforce_password=[salesforce_password]
+    salesforce_username=[salesforce_user_created_above]
+    salesforce_password=[salesforce_password_created_above]
+    salesforce_security_token=[salesforce_security_token_created_above]
     ```
 
 #### Setup a Public Address Through ngrok
@@ -74,28 +80,6 @@ You should now be able to communicate with the bot from within Cisco Spark.
 In order to receive alerts for events from Salesforce, you must first create a Trigger. Triggers reside in Salesforce as Apex code. 
 Triggers will execute on specific events that happen to tables within Salesforce (e.g. - before or after update, insert, create, and delete).
 
-#### Create a Trigger
-------------------
-1. Near the top, click "Setup"
-2. In the left nav, click "Customize"
-3. In the expanded nav, find and click on the entity you want to customize
-4. In the next expanded nav, click "Triggers"
-5. Click the "New" button
-6. We have created OpportunityUpdate Trigger as an example
-    1. [See all of our example Triggers](https://gitlab.asynchrony.com/proj-1274/spark-botkit-salesforce/tree/master/docs)
-    2. NOTE: You will have to update the call to SFBotHttpRequest.send to pass in the public address of your bot
-7. Save the Trigger
-~~~~
-trigger OpportunityUpdateSFBot on Opportunity (after update) {
-    Map<String, List<Opportunity>> mapToSerialize = new Map<String, List<Opportunity>>();
-
-    // The Trigger.old & Trigger.new represent a list of records before and after being altered
-    mapToSerialize.put('new', Trigger.new);
-    mapToSerialize.put('old', Trigger.old);
-    SFBotHttpRequest.send('https://234c2e59.ngrok.io/salesforce/update', JSON.serialize(mapToSerialize));
-}
-~~~~
-
 #### Asynchronous Trigger (Sending Http Requests from Trigger)
 ---------------------------------------------------------------------
 
@@ -123,6 +107,28 @@ public class SFBotHttpRequest{
     req.setBody(payload);
     http.send(req);
     }
+}
+~~~~
+
+#### Create a Trigger
+------------------
+1. Near the top, click "Setup"
+2. In the left nav, click "Customize"
+3. In the expanded nav, find and click on the entity you want to customize
+4. In the next expanded nav, click "Triggers"
+5. Click the "New" button
+6. We have created OpportunityUpdate Trigger as an example
+    1. [See all of our example Triggers](https://gitlab.asynchrony.com/proj-1274/spark-botkit-salesforce/tree/master/docs)
+    2. NOTE: You will have to update the call to SFBotHttpRequest.send to pass in the public address of your bot
+7. Save the Trigger
+~~~~
+trigger OpportunityUpdateSFBot on Opportunity (after update) {
+    Map<String, List<Opportunity>> mapToSerialize = new Map<String, List<Opportunity>>();
+
+    // The Trigger.old & Trigger.new represent a list of records before and after being altered
+    mapToSerialize.put('new', Trigger.new);
+    mapToSerialize.put('old', Trigger.old);
+    SFBotHttpRequest.send('https://234c2e59.ngrok.io/salesforce/update', JSON.serialize(mapToSerialize));
 }
 ~~~~
 
