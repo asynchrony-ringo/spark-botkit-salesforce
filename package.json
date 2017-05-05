@@ -27,7 +27,7 @@
   ],
   "main": "src/bot.js",
   "scripts": {
-    "start": "node src/bot.js ./start.dev.sh",
+    "start": "docker build -t cisco/salesforce-spark-bot . && ./start.dev.sh",
     "test": "mocha test --recursive",
     "test:watch": "npm run test -- --watch",
     "test:docker": "docker exec -it salesforce-spark-bot npm run test",
