@@ -2,7 +2,7 @@ This project is aimed at bridging Spark and Salesforce via Spark bot technology.
 
 ## Deploy to Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/asynchrony-ringo/spark-botkit-salesforce/)
 
 ## Getting Started
 
