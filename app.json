@@ -26,11 +26,15 @@
       "required": true
     },
     "salesforce_username": {
-      "description": "The username of the account to used to authenticate with Salesforce. Changes made to Salesforce will be performed by this user, so you may want to create a special bot account.",
+      "description": "The username of the account used to authenticate with Salesforce. Changes made to Salesforce will be performed by this user, so you may want to create a special bot account.",
       "required": true
     },
     "salesforce_password": {
-      "description": "The password of the account to used to authenticate with Salesforce.",
+      "description": "The password of the account used to authenticate with Salesforce.",
+      "required": true
+    },
+    "salesforce_security_token": {
+      "description": "The security token of the account used to authenticate with Salesforce.",
       "required": true
     }
   },
